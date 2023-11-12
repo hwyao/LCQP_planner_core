@@ -2,8 +2,8 @@
 *.asv
 
 # don't upload any external interfaces
-./matlab/remApi.m
-./matlab/remoteApi.dll
-./matlab/remoteApi.so
-./matlab/remoteApiProto.m
+/matlab/remApi.m
+/matlab/remoteApi.dll
+/matlab/remoteApi.so
+/matlab/remoteApiProto.m
 
