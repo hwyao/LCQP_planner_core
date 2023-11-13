@@ -9,12 +9,17 @@ classdef IController < handle
     %IController the Interface of the controller
     
     properties (Abstract)
+        %%%%%%%%%%%%%% handle properties %%%%%%%%%%%%%%
         robotModel
         % the class that represent the robot model
 
         obstacleList
         % the list of obstacle.
 
+        %%%%%%%%%%%%%% simulation properties %%%%%%%%%%%%%%
+        dt
+        % the time of each step
+        
         toleranceEnd
         % the tolerance that considers that the robot reaches the target
 
