@@ -1,0 +1,3 @@
+[submodule "matlab/submodule/LCQPow"]
+	path = matlab/submodule/LCQPow
+	url = https://github.com/hallfjonas/LCQPow
