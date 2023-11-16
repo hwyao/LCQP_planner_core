@@ -9,21 +9,18 @@ classdef IObstacle < handle
     %IOBSTACLE the Interface of the obstacle
     
     properties (Abstract, SetAccess = immutable)
-        name
+        name(1,:) char
         % the name of the obstacle in vrep
 
-        isActive
+        isActive(1,1) logical
         % indicate the active/passive status of our program
         % active: We send the position status to control the obstacle
         % passive: We get the position status from vrep
     end
     
     properties (Abstract)
-        center
-        % the center point of the obstacle
-
-        vrep
-        % the vrep interface of the obstacle
+        dqVrep DQ_VrepInterface 
+        % the DQ vrep interface of the obstacle
     end
 
     methods

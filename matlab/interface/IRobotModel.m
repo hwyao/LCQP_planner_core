@@ -23,15 +23,15 @@ classdef IRobotModel < handle
     end
     
     properties (Abstract)
-        kinematic 
+        kinematic DQ_SerialManipulator
         % the kinematic structure of the robot
         
-        vrep 
-        % the vrep interface for communication
+        dqVrep DQ_VrepInterface
+        % the DQ vrep interface for communication
     end
     
     methods (Abstract)
-        [contactDist, contactPtObs, contactPtRobot, contactNormal, contactJacobian] = detectContact(model,obstacle,iLink);
+        [contactDist, contactPtObs, contactPtRobot, contactNormal, contactTransJacobian] = detectContact(model,obstacle,iLink);
         % DETECTCONTACT detect the basic contact information bewteen the robot model and
         % the obstacle.
         % Input:
@@ -71,12 +71,12 @@ classdef IRobotModel < handle
         
         function q = fetchStatus(model)
             % FETCHSTATUS fetch the joint configuration of the robot
-            q = obj.vrep_interface.get_joint_positions(model.jointVrep);
+            q = model.dqVrep.get_joint_positions(model.jointVrep);
         end
         
         function updateStatus(model,q)
             % UPDATESTATUS update the joint configuration of the robot
-            obj.vrep_interface.set_joint_positions(model.jointVrep,q)
+            model.dqVrep.set_joint_positions(model.jointVrep,q)
         end
     end
 end
