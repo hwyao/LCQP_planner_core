@@ -68,6 +68,7 @@ classdef ControllerLCQP < IController
             changeMax = 100;
             saftyDist = 0.1;
             linkCode = [3,4,5,7];
+            lambda = 0.001;
 
             % get coordiate status
             qNow = controller.q;
@@ -80,7 +81,7 @@ classdef ControllerLCQP < IController
             J = controller.robotModel.poseJacobian(qNow);
             J_pos = controller.robotModel.kinematic.translation_jacobian(J,fkNow);
             %invJ = pinv(J);
-            invJ_pos = pinv(J_pos);
+            invJ_pos = J_pos' * pinv(J_pos*J_pos' + lambda * eye(4));
 
             nLink = controller.robotModel.kinematic.n_links;
             nObs = numel(controller.obstacleList);
@@ -130,7 +131,9 @@ classdef ControllerLCQP < IController
                     contactNormalDQ = DQ(contactNormal);
     
                     R(iNum,1:nLink) = hContact * contactNormalDQ.vec4' * contactJacobMtx(:,:,iNum); % validate this later.
-                    A(1:nLink,iNum+nLink) = -pinv(contactJacobMtx(:,:,iNum)) * contactNormalDQ.vec4;
+                    J_temp = contactJacobMtx(:,:,iNum);
+                    JDinv = J_temp' * pinv(J_temp*J_temp' + lambda * eye(4));
+                    A(1:nLink,iNum+nLink) = -JDinv * contactNormalDQ.vec4;
                 end
             end
 
