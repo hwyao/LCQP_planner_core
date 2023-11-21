@@ -13,8 +13,8 @@ classdef IController < handle
         robotModel IRobotModel
         % the class that represent the robot model
 
-        obstacleList cell {mustBeIObstacleCell(obstacleList)}
-        % the list of obstacle.
+%         obstacleList cell {mustBeIObstacleCell(obstacleList)}
+%         % the list of obstacle.
 
         %%%%%%%%%%%%%% simulation properties %%%%%%%%%%%%%%
         dt(1,1) double
