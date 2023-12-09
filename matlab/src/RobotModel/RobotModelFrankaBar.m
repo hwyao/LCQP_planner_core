@@ -53,11 +53,11 @@ classdef RobotModelFrankaBar < IRobotModel
 
     methods
         function [contactDist, contactPtObs, contactPtRobot, ...
-                  contactNormal, contactTransJacobian] = detectContact(model,obstacle,q,iLink)
+                  contactNormal, contactTransJacobian, contactTransJacobianGeometric] = detectContact(model,obstacle,q,iLink)
             objectClassName = class(obstacle);
             if isequal(objectClassName,"ObstacleSphere")
                 [contactDist, contactPtObs, contactPtRobot, ...
-                 contactNormal, contactTransJacobian] = barSphereContact(model,obstacle,q,iLink);
+                 contactNormal, contactTransJacobian, contactTransJacobianGeometric] = barSphereContact(model,obstacle,q,iLink);
             end
         end
     end

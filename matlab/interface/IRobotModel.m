@@ -31,7 +31,7 @@ classdef IRobotModel < handle
     end
     
     methods (Abstract)
-        [contactDist, contactPtObs, contactPtRobot, contactNormal, contactTransJacobian] = detectContact(model,obstacle,iLink);
+        [contactDist, contactPtObs, contactPtRobot, contactNormal, contactTransJacobian, contactTransJacobianGeometric] = detectContact(model,obstacle,iLink);
         % DETECTCONTACT detect the basic contact information bewteen the robot model and
         % the obstacle.
         % Input:
