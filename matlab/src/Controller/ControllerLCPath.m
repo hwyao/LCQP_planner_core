@@ -109,7 +109,7 @@ classdef ControllerLCPath < IController
             end
 
             % Set the global variables for PATH solver to use
-            setGblVars(contactJacobMtx, contactNormalMtx, contactDistMtx, ip_task2js, qNow);
+            setGblVars(contactJacobMtx, contactNormalMtx, contactDistMtx, ip_task2js, qNow, length(linkCode));
 
             % /////////////////////////////////////////
             % % % PATH related setup            
