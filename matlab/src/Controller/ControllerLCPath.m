@@ -103,10 +103,10 @@ classdef ControllerLCPath < IController
             Jg_corrected = [Jg(4:6, :); Jg(1:3, :)];
             ip_task2js = beta * Jg_corrected' * ((Jg_corrected*Jg_corrected') \ (velToGoalPadded));
 
-            for iLink = 1:numel(linkCode)
-                linkCodeNow = linkCode(iLink);
-                contactJacobMtx(:, 1:linkCodeNow, iLink) = Jg_corrected(:, 1:linkCodeNow);
-            end
+            % % % for iLink = 1:numel(linkCode)
+            % % %     linkCodeNow = linkCode(iLink);
+            % % %     contactJacobMtx(:, 1:linkCodeNow, iLink) = Jg_corrected(:, 1:linkCodeNow);
+            % % % end
 
             % Set the global variables for PATH solver to use
             setGblVars(contactJacobMtx, contactNormalMtx, contactDistMtx, ip_task2js, qNow, length(linkCode));
