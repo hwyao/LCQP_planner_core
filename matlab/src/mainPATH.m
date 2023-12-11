@@ -52,7 +52,7 @@ posObs3 = [0.15,-0.55,0.6];
 while controller.checkEnd() == false
     % inject the external data
     if phase == 1
-        posObs1 = posObs1 + [0,0.005,0];
+        posObs1 = posObs1 + [0.0001,0.0,0];
         posObs3 = posObs3 + [0,0.005,0];
         if posObs1(2) >= 1.5
             phase = 2;
