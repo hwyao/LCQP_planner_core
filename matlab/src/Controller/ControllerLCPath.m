@@ -1,5 +1,7 @@
-% Contributor: Anirban Sinha
-classdef ControllerLCPath < IController    
+% Contributor: Anirban Sinha, Riddhiman Laha
+classdef ControllerLCPath < IController   
+    %CONTROLLERLCPath The planner based on Path Solver with Linear 
+    % Complementarity Constraints 
     properties
         %%%%%%%%%%%%%% handle properties %%%%%%%%%%%%%%
         robotModel = RobotModelFrankaBar.empty
@@ -118,7 +120,7 @@ classdef ControllerLCPath < IController
                 l(j) = -Inf; 
                 u(j) = Inf;
             end
-            l(1, 8:11) = 0;   % sice complementarity velocity is always >= 0 
+            l(1, 8:11) = 0;   % since complementarity velocity is always >= 0 
             
             % call the PATH solver
             [controller.z, f, J] = pathmcp(controller.z, l, u, 'mcpfuncjacEval2');
