@@ -11,31 +11,43 @@ classdef testBallSphereContact < matlab.unittest.TestCase
         robot
         
         obstacle
+
+        data
+
+        dataSize
+
+        tol = 1e-5
     end
     
     methods(TestClassSetup)
         function setup(testCase)
             vi = DQ_VrepInterface;
-            testCase.robot = RobotModelFrankaBar("FrankaFixed",vi);
+            testCase.robot = RobotModelFrankaBar("FrankaFix",vi);
             testCase.obstacle = ObstacleSphere("/Sphere",false,vi);
+            testCase.data = load(matlab.project.rootProject().ProjectStartupFolder+"/matlab/data/test_data");
+            testCase.dataSize = numel(testCase.data.test_data);
         end
     end
     
     methods(Test) 
         function test(testCase)
-            testCase.obstacle.center = [0;0;0.1];
-            testCase.obstacle.radius = 0.05;
-            
-            q = [0;0;0;0;0;0;0];
-            iLink = 1;
+            for iTest = 1:testCase.dataSize
+                testCase.obstacle.center = testCase.data.test_data(iTest).obs_pose;
+                testCase.obstacle.radius = testCase.data.test_data(iTest).obs_radius;
+                q = testCase.data.test_data(iTest).q;
+                iLink = testCase.data.test_data(iTest).link;
 
-            [contactDist, contactPtObs, contactPtRobot, ...
-             contactNormal, ~] = barSphereContact(testCase.robot,testCase.obstacle,q,iLink);
+                contactDistWanted = testCase.data.test_data(iTest).distance;
+                contactPtObsWanted = testCase.data.test_data(iTest).spherePoint;
+                contactPtRobotWanted = testCase.data.test_data(iTest).closestPoint;
 
-            testCase.assumeEqual(contactDist,0);
-            testCase.assumeEqual(contactPtObs,[0;0;0]);
-            testCase.assumeEqual(contactPtRobot,[0;0;0]);
-            testCase.assumeEqual(contactNormal,[0;0;0]);
+                [contactDist, contactPtObs, contactPtRobot, ...
+                 ~, ~] = barSphereContact(testCase.robot,testCase.obstacle,q,iLink);
+    
+                testCase.assertEqual(contactDist,contactDistWanted,'AbsTol',testCase.tol);
+                testCase.assertEqual(contactPtObs,contactPtObsWanted,'AbsTol',testCase.tol);
+                testCase.assertEqual(contactPtRobot,contactPtRobotWanted,'AbsTol',testCase.tol);
+            end
         end
     end
     
