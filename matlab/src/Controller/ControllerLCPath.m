@@ -111,7 +111,7 @@ classdef ControllerLCPath < IController
             % % % end
 
             % Set the global variables for PATH solver to use
-            setGblVars(contactJacobMtx, contactNormalMtx, contactDistMtx, ip_task2js, qNow, length(linkCode));
+            setGlobalVariables(contactJacobMtx, contactNormalMtx, contactDistMtx, ip_task2js, qNow, length(linkCode));
 
             % /////////////////////////////////////////
             % % % PATH related setup            
@@ -123,7 +123,7 @@ classdef ControllerLCPath < IController
             l(1, 8:11) = 0;   % since complementarity velocity is always >= 0 
             
             % call the PATH solver
-            [controller.z, f, J] = pathmcp(controller.z, l, u, 'mcpfuncjacEval2');
+            [controller.z, ~, ~] = pathmcp(controller.z, l, u, 'mcpfuncjacEval2_mex');
             controller.xLast = controller.z(1:7, 1);
             controller.q = controller.z(1:7, 1);
 

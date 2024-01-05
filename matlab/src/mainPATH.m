@@ -4,11 +4,7 @@ clc;
 clear;
 
 % define some global variabless
-global dof;   global h;   global safe_dist;
-
-dof = 7;
-h = 1e-3;
-safe_dist = 1e-1;
+setGlobalVariablesOnce(7,1e-3,1e-1);
 
 % Initialize the Vrep model
 dqVrep = DQ_VrepInterface;
