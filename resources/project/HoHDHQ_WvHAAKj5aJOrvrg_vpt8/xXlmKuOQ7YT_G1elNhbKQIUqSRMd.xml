@@ -1,2 +1,2 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<Info description="This is the LCQP planner implementation.&#xa;Program Architect: Haowen Yao&#xa;Contributor List: [Pending]"/>
+<Info description="The core simulator planner for LCQP and its comparisons"/>
