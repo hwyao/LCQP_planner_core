@@ -65,7 +65,8 @@ classdef ControllerSimple < IController
             % % % controller.q = controller.q + qdot; 
 
             % update the status
-            controller.sendAndStep()
+            controller.stepSend();
+            controller.stepUpdateCounter();
 
             % increase the loop count
             controller.loop_cnt = controller.loop_cnt + 1;

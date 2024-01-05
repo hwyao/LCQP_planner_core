@@ -42,17 +42,17 @@ classdef IController < handle
     
     methods (Abstract)
         isReached = goalReached(controller)
-        % GOALREACHED check if the goal is reached
+        % GOALREACHED check if the goal is reached  
 
         nextStep(controller)
         % NEXTSTEP check the status of the controller step and update the
-        % next step
+        % next step 
     end
 
     methods
         function isEnd = checkEnd(controller)
-        % CHECKEND check of the robot is reaching the end.
-        % Always called 1:1 with each nextStep() callup
+        % CHECKEND check of the robot is reaching the end. 
+        % Always called 1:1 with each nextStep() callup 
             isEnd = false;
             if controller.currentEndCount >= controller.maxEndCount || ...
                controller.currentStep > controller.maxStep
@@ -75,10 +75,15 @@ classdef IController < handle
     end
 
     methods (Access=protected)
-        function sendAndStep(controller)
-        % SENDANDSTEP send the current Q, increase a step for all the
-        % status
+        function stepSend(controller)
+        % STEPSEND send the joint configuration. Should be called in each
+        % nextStep() iteration of realtime plannner.
             controller.robotModel.updateStatus(controller.q);
+        end
+
+        function stepUpdateCounter(controller)
+        % STEPUPDATECOUNTER update the iteration counter. Should be called 
+        % in each nextStep() iteration.
             controller.currentStep = controller.currentStep + 1;
             if controller.goalReached() == true
                 controller.currentEndCount = controller.currentEndCount + 1;

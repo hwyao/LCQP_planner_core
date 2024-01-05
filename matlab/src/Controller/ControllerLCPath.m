@@ -128,7 +128,8 @@ classdef ControllerLCPath < IController
             controller.q = controller.z(1:7, 1);
 
             % update the status
-            controller.sendAndStep()
+            controller.stepSend();
+            controller.stepUpdateCounter();
 
             % increase the loop count
             controller.loop_cnt = controller.loop_cnt + 1;

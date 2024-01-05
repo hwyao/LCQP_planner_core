@@ -30,12 +30,12 @@ classdef ControllerLCQP < IController
         currentEndCount = 0
 
         currentStep = 0
-
-        xLast
-
-        %%%%%%%%%%%%% simulation goal %%%%%%%%%%%%%%%%%%%%%%%
+    
+    xLast
+        
+%%%%%%%%%%%%% simulation goal %%%%%%%%%%%%%%%%%%%%%%%
         goal(3,1) double
-    end
+            end
     
     methods
         function controller = ControllerLCQP(robotModel,obstacleList,goal)
@@ -187,7 +187,8 @@ classdef ControllerLCQP < IController
             controller.q = controller.q + hContact * qdot; 
 
             % update the status
-            controller.sendAndStep()
+            controller.stepSend();
+            controller.stepUpdateCounter();
         end
     end
 end
