@@ -1,9 +1,41 @@
-# ignore matlab autosave
+# Windows default autosave extension
 *.asv
 
-# don't upload any external interfaces
-/matlab/remApi.m
-/matlab/remoteApi.dll
-/matlab/remoteApi.so
-/matlab/remoteApiProto.m
+# OSX / *nix default autosave extension
+*.m~
 
+# Compiled MEX binaries (all platforms)
+*.mex*
+
+# Packaged app and toolbox files
+*.mlappinstall
+*.mltbx
+
+# Generated helpsearch folders
+helpsearch*/
+
+# Simulink code generation folders
+slprj/
+sccprj/
+
+# Matlab code generation folders
+codegen/
+
+# Simulink autosave extension
+*.autosave
+
+# Simulink cache files
+*.slxc
+
+# Octave session info
+octave-workspace
+
+# don't upload coppelia external interfaces
+matlab/remApi.m
+matlab/remoteApi.dll
+matlab/remoteApi.so
+matlab/remoteApiProto.m
+
+# ignore the pathmex submodules and files
+matlab/submodule/pathmex
+logfile.tmp

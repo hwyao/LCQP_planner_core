@@ -1,3 +1,5 @@
+% IOBSTACLE the Interface of the obstacle
+
 % This file is code of LCQP_planner_core project:
 %   This script is the unreleased version of the project only for internal 
 %   circulation. Any modification, distribution, private or commercial use 
@@ -6,25 +8,23 @@
 %   
 % Contributor: Haowen Yao 
 classdef IObstacle < handle
-    %IOBSTACLE the Interface of the obstacle
-    
     properties (Abstract, SetAccess = immutable)
-        name(1,:) char
         % the name of the obstacle in vrep
-
+        name(1,:) char
+        
+        % indicate the active/passive status of the obstacle
+        % active(true): We send the position status to control the obstacle
+        % passive(false): We get the position status from vrep
         isActive(1,1) logical
-        % indicate the active/passive status of our program
-        % active: We send the position status to control the obstacle
-        % passive: We get the position status from vrep
     end
     
     properties (Abstract)
-        dqVrep DQ_VrepInterface 
         % the DQ vrep interface of the obstacle
+        dqVrep DQ_VrepInterface 
     end
 
     methods
-        updateStatus(obs)
         % update the status of the obstacle
+        updateStatus(obs)
     end
 end

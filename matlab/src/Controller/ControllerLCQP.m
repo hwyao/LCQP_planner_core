@@ -1,3 +1,6 @@
+%CONTROLLERLCQP The planner based on Quadratic Programs with Linear
+% Complementarity Constraints
+
 % This file is code of LCQP_planner_core project:
 %   This script is the unreleased version of the project only for internal 
 %   circulation. Any modification, distribution, private or commercial use 
@@ -6,35 +9,46 @@
 %   
 % Contributor: Haowen Yao 
 classdef ControllerLCQP < IController
-    %CONTROLLERLCQP The planner based on Quadratic Programs with Linear 
-    % Complementarity Constraints 
-    
+    % inherited propeties
     properties
-        %%%%%%%%%%%%%% handle properties %%%%%%%%%%%%%%
         robotModel = RobotModelFrankaBar.empty
-
         obstacleList = {}
-
-        %%%%%%%%%%%%%% simulation properties %%%%%%%%%%%%%%
+        
         dt = 1e-2
-
         toleranceEnd = 1e-2
-
         maxEndCount = 3
-
         maxStep = 1000
-
-        %%%%%%%%%%%%% simulation status %%%%%%%%%%%%%%%%%%%%%
+        
         q
-
         currentEndCount = 0
-
         currentStep = 0
+    end
 
-        xLast
-
-        %%%%%%%%%%%%% simulation goal %%%%%%%%%%%%%%%%%%%%%%%
+    % planner specific properties
+    properties
+        % Last output of the planner. Stored for better initial guess of later solution. 
+        xLast(:,1) double
+        
+        % Goal of the planner. Here we accept the goal as position.
         goal(3,1) double
+
+        % constant for main task c*J*dx
+        constMainTask = 1
+
+        % constant for collision avoidance h*J1_1*N1_1*qdot
+        constContactTask = 0.001
+
+        % the upper and lower bound for each status in solver
+        solverBound = 100
+
+        % the safety distance between robot bar and 
+        safetyDistance = 0.1
+
+        % the link that considers obstacle avoidance
+        linkObstacleAvoid = [3,4,5,7]
+
+        % the lambda parameter for damped jacobian inverse
+        robustJinvLambda = 0.001
     end
     
     methods
@@ -57,18 +71,19 @@ classdef ControllerLCQP < IController
         end
 
         function nextStep(controller,obsPosList)
-            % read the status
+            
+            % update obstacle positions
             for iObs = 1:numel(controller.obstacleList)
-                controller.obstacleList{iObs}.updateStatus(obsPosList(iObs,:))
+                controller.obstacleList{iObs}.updateStatus(obsPosList(iObs,:));
             end
 
-            % some constants (could be later moved into the class property)
-            cMainTask = 1;
-            hContact = 0.001;
-            changeMax = 100;
-            saftyDist = 0.1;
-            linkCode = [3,4,5,7];
-            lambda = 0.001;
+            % get constants 
+            cMainTask = controller.constMainTask;
+            hContact = controller.constContactTask;
+            changeMax = controller.solverBound;
+            safetyDist = controller.safetyDistance;
+            linkCode = controller.linkObstacleAvoid;
+            lambda = controller.robustJinvLambda;
 
             % get coordiate status
             qNow = controller.q;
@@ -81,8 +96,9 @@ classdef ControllerLCQP < IController
             J = controller.robotModel.poseJacobian(qNow);
             J_pos = controller.robotModel.kinematic.translation_jacobian(J,fkNow);
             %invJ = pinv(J);
-            invJ_pos = J_pos' * pinv(J_pos*J_pos' + lambda * eye(4));
+            invJ_pos = J_pos' * pinv(J_pos*J_pos' + lambda * eye(4)); % use damped Jacobian inverse
 
+            % prepare size information
             nLink = controller.robotModel.kinematic.n_links;
             nObs = numel(controller.obstacleList);
             nLinkObs = numel(linkCode);
@@ -91,7 +107,8 @@ classdef ControllerLCQP < IController
                 nContacts = nLink;
             end
             nVariables = nLink + nContacts;
-
+            
+            % prepare data for LCQP
             % Algorithm explained:
             % The x for LCQP is = [qdot_1,qdot_2,qdot_3,....,qdot_nLink, v1_1, v1_2, ..., vnObs_nLinkObs];
             % For which:
@@ -122,22 +139,22 @@ classdef ControllerLCQP < IController
             for iObs = 1:nObs
                 for iLink = 1:numel(linkCode)
                     linkCodeNow = linkCode(iLink);
-                    [contactDist, ~, ~, ...
-                     contactNormal, contactTransJacobian] = controller.robotModel.detectContact(controller.obstacleList{iObs},qNow,linkCodeNow);
+                    [contactDist, ~, ~, contactNormal, contactTransJacobian, ~] = ...
+                        controller.robotModel.detectContact(controller.obstacleList{iObs},qNow,linkCodeNow);
                     iNum = (iObs-1)*nLinkObs + iLink;
                     contactDistMtx(iNum) = contactDist;
                     contactNormalMtx(iNum,:) = contactNormal;
                     contactJacobMtx(:,1:linkCodeNow,iNum) = contactTransJacobian;
                     contactNormalDQ = DQ(contactNormal);
     
-                    R(iNum,1:nLink) = hContact * contactNormalDQ.vec4' * contactJacobMtx(:,:,iNum); % validate this later.
+                    R(iNum,1:nLink) = hContact * contactNormalDQ.vec4' * contactJacobMtx(:,:,iNum); 
                     J_temp = contactJacobMtx(:,:,iNum);
                     JDinv = J_temp' * pinv(J_temp*J_temp' + lambda * eye(4));
                     A(1:nLink,iNum+nLink) = -JDinv * contactNormalDQ.vec4;
                 end
             end
 
-            lbR = - contactDistMtx + saftyDist;
+            lbR = - contactDistMtx + safetyDist;
             if (nContacts > nObs*nLinkObs)
                 lbR(nObs*nLinkObs+1:end) = 0;
             end
@@ -158,14 +175,15 @@ classdef ControllerLCQP < IController
                 params.x0 = controller.xLast;
             end
 
+            % call LCQPow planner
             [x, ~, ~] = LCQPow(Q, g, L, R, lbL, ubL, lbR, ubR, A, lbA, ubA, lb, ub, params);
             controller.xLast = x;
             qdot = x(1:nLink,1);
             controller.q = controller.q + hContact * qdot; 
 
             % update the status
-            controller.sendAndStep()
+            controller.stepSend();
+            controller.stepUpdateCounter();
         end
     end
 end
-

@@ -1,3 +1,6 @@
 [submodule "matlab/submodule/LCQPow"]
 	path = matlab/submodule/LCQPow
 	url = https://github.com/hallfjonas/LCQPow
+[submodule "matlab/submodule/matlab-codegen-helper-raw"]
+	path = matlab/submodule/matlab-codegen-helper-raw
+	url = https://github.com/hwyao/matlab-codegen-helper-raw

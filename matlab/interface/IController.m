@@ -1,3 +1,5 @@
+% IController the Interface of all controllers
+
 % This file is code of LCQP_planner_core project:
 %   This script is the unreleased version of the project only for internal 
 %   circulation. Any modification, distribution, private or commercial use 
@@ -6,53 +8,66 @@
 %   
 % Contributor: Haowen Yao 
 classdef IController < handle
-    %IController the Interface of the controller
-    
     properties (Abstract)
         %%%%%%%%%%%%%% handle properties %%%%%%%%%%%%%%
-        robotModel IRobotModel
-        % the class that represent the robot model
 
+        % class handle that represent the robot model
+        robotModel IRobotModel
+        
+        % list of handles that contains information of obstacle.
         obstacleList cell {mustBeIObstacleCell(obstacleList)}
-        % the list of obstacle.
 
         %%%%%%%%%%%%%% simulation properties %%%%%%%%%%%%%%
+        
+        % time of each step
         dt(1,1) double
-        % the time of each step
         
+        % tolerance that considers that the robot reaches the target
+        % See: goalReached
         toleranceEnd(1,1) double 
-        % the tolerance that considers that the robot reaches the target
-
-        maxEndCount(1,1) double
-        % the number of step that robot should stay in "toleranceEnd" to end the planning 
         
+        % number of step that robot should stay in toleranceEnd to end the planning 
+        % See: currentEndCount, stepUpdateCounter, checkEnd
+        maxEndCount(1,1) double
+        
+        % maximum iterations of step that we can take to interrupt endless running
+        % See: currentStep, stepUpdateCounter, checkEnd
         maxStep(1,1) double
-        % the maximum step that we can take to force endless running
 
         %%%%%%%%%%%%% simulation status %%%%%%%%%%%%%%%%%%%%%
+        
+        % current joint configuration
         q(:,1) double
-        % the current joint configuration
-
+        
+        % current count of robot stay in the condition of ending
+        % See: goalReached, stepUpdateCounter, checkEnd
         currentEndCount(1,1) double
-        % the current count of robot stay in the condition of ending
-
+        
+        % current total step of the controller running 
+        % See: stepUpdateCounter, checkEnd
         currentStep(1,1) double
-        % the current step of the
     end
     
     methods (Abstract)
+        % GOALREACHED check if the goal is reached. 
+        % called by stepUpdateCounter to decide if currentEndCount
+        % should be increased. Return true to represent goal reached.
+        % See: stepUpdateCounter, currentEndCount
         isReached = goalReached(controller)
-        % GOALREACHED check if the goal is reached
-
+         
+        % NEXTSTEP update the controller and step once forward.
+        % The implementaiton of controller should be here.
+        % Consider to call some function in start and end of nextStep to
+        % update the status.
+        % See: stepSend, stepUpdateCounter
         nextStep(controller)
-        % NEXTSTEP check the status of the controller step and update the
-        % next step
     end
 
     methods
         function isEnd = checkEnd(controller)
         % CHECKEND check of the robot is reaching the end.
-        % Always called 1:1 with each nextStep() callup
+        % Called externally to notify if 
+        % Suggest to be called 1:1 parallel with each nextStep callup. 
             isEnd = false;
             if controller.currentEndCount >= controller.maxEndCount || ...
                controller.currentStep > controller.maxStep
@@ -75,10 +90,15 @@ classdef IController < handle
     end
 
     methods (Access=protected)
-        function sendAndStep(controller)
-        % SENDANDSTEP send the current Q, increase a step for all the
-        % status
+        function stepSend(controller)
+        % STEPSEND send the joint configuration. Should be called in each
+        % nextStep() iteration of realtime plannner.
             controller.robotModel.updateStatus(controller.q);
+        end
+
+        function stepUpdateCounter(controller)
+        % STEPUPDATECOUNTER update the iteration counter. Should be called 
+        % in each nextStep() iteration.
             controller.currentStep = controller.currentStep + 1;
             if controller.goalReached() == true
                 controller.currentEndCount = controller.currentEndCount + 1;

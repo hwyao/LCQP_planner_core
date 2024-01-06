@@ -1,3 +1,5 @@
+%ROBOTMODELBAR The franka Emika robot model with bar convention
+
 % This file is code of LCQP_planner_core project:
 %   This script is the unreleased version of the project only for internal 
 %   circulation. Any modification, distribution, private or commercial use 
@@ -6,8 +8,6 @@
 %   
 % Contributor: Haowen Yao 
 classdef RobotModelFrankaBar < IRobotModel
-    %ROBOTMODELBAR The franka Emika robot model with bar convention
-    
     properties (SetAccess=immutable)
         DH =    [0,      0,      0,      0,      0,          0,      0;
                  0.333,  0,      0.316,  0,      0.384,      0,      0;
@@ -38,7 +38,7 @@ classdef RobotModelFrankaBar < IRobotModel
             end
 
             modelName = subsref(split(robotName,"#"),struct('type', '()', 'subs', {{1}}));
-            if ~isequal("FrankaFixed",modelName) && ~isequal("Franka",modelName)
+            if ~isequal("FrankaFix",modelName) && ~isequal("Franka",modelName)
                 error("Please input a Franka model.");
             end
             jointVrepName = "/" + modelName + "/" + model.jointName; 
@@ -53,11 +53,11 @@ classdef RobotModelFrankaBar < IRobotModel
 
     methods
         function [contactDist, contactPtObs, contactPtRobot, ...
-                  contactNormal, contactTransJacobian] = detectContact(model,obstacle,q,iLink)
+                  contactNormal, contactTransJacobian, contactTransJacobianGeometric] = detectContact(model,obstacle,q,iLink)
             objectClassName = class(obstacle);
             if isequal(objectClassName,"ObstacleSphere")
                 [contactDist, contactPtObs, contactPtRobot, ...
-                 contactNormal, contactTransJacobian] = barSphereContact(model,obstacle,q,iLink);
+                 contactNormal, contactTransJacobian, contactTransJacobianGeometric] = barSphereContact(model,obstacle,q,iLink);
             end
         end
     end

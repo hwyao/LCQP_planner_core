@@ -1,3 +1,5 @@
+% IROBOTMODEL The Interface of the robot model
+
 % This file is code of LCQP_planner_core project:
 %   This script is the unreleased version of the project only for internal
 %   circulation. Any modification, distribution, private or commercial use
@@ -6,32 +8,29 @@
 %
 % Contributor: Haowen Yao
 classdef IRobotModel < handle
-    %IROBOTMODEL The Interface of the robot model
-    
     properties (Abstract,SetAccess = immutable)
-        DH;
         % the DH parameters of the robot model
+        DH;
         
-        EE;
         % the EE parameters of the robot model
+        EE;
         
-        jointName;
         % the name of each joint (without the prefix of the robot name)
+        jointName;
         
+        % the name of each joint for communication to vrep 
         jointVrep;
-        % the name of each joint for communication to vrep
     end
     
     properties (Abstract)
-        kinematic DQ_SerialManipulator
         % the kinematic structure of the robot
+        kinematic DQ_SerialManipulator
         
-        dqVrep DQ_VrepInterface
         % the DQ vrep interface for communication
+        dqVrep DQ_VrepInterface
     end
     
     methods (Abstract)
-        [contactDist, contactPtObs, contactPtRobot, contactNormal, contactTransJacobian] = detectContact(model,obstacle,iLink);
         % DETECTCONTACT detect the basic contact information bewteen the robot model and
         % the obstacle.
         % Input:
@@ -43,9 +42,10 @@ classdef IRobotModel < handle
         %    contactDist: the shortest distance before the contact
         %    contactPtObstacle: the point of shortest contact on obstacle
         %    contactPtRobot: the point of shortest contact on robot
-        %    contactNormal: the normal vector pointing outward from the
-        %     contact point.
-        %    contactJacobian: the Jacobian of the contact point.
+        %    contactNormal: the normal vector pointing outward from the contact point.
+        %    contactTransJacobian: the translation Jacobian of the contact point on robot.
+        %    contactTransJacobianGeometric: geometric Jacobian of contactTransJacobian
+        [contactDist, contactPtObs, contactPtRobot, contactNormal, contactTransJacobian, contactTransJacobianGeometric] = detectContact(model,obstacle,iLink);
     end
     
     methods

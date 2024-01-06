@@ -1,3 +1,6 @@
+%BARSPHERECONTACT the physical calculation on how bar-model robot and sphere robot take into
+% contact.
+
 % This file is code of LCQP_planner_core project:
 %   This script is the unreleased version of the project only for internal 
 %   circulation. Any modification, distribution, private or commercial use 
@@ -6,9 +9,7 @@
 %   
 % Contributor: Haowen Yao 
 function [contactDist, contactPtObs, contactPtRobot, ...
-          contactNormal, contactTransJacobian] = barSphereContact(model,obstacle,q,iLink)
-%BARSPHERECONTACT the physical calculation on how bar-model robot and sphere robot take into
-% contact.
+          contactNormal, contactTransJacobian, contactTransJacobianGeometric] = barSphereContact(model,obstacle,q,iLink)
     arguments
         model RobotModelFrankaBar
         obstacle ObstacleSphere
@@ -52,5 +53,7 @@ function [contactDist, contactPtObs, contactPtRobot, ...
     x = model.kinematic_extra.get_pose(q,iLink,projectToLinkLength);
     J = model.kinematic_extra.get_pose_jacobian(q,iLink,projectToLinkLength);
     contactTransJacobian = 2*haminus4(x.P')*J(5:8,:)+2*hamiplus4(x.D)*DQ.C4*J(1:4,:);
+    CJ4_2_J3= [zeros(3,1) eye(3)];
+    contactTransJacobianGeometric = 2*CJ4_2_J3*(haminus4(x.P')*J(5:8,:) + hamiplus4(x.D)*DQ.C4*J(1:4,:));
 end
 
