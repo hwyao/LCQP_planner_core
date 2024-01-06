@@ -1,3 +1,11 @@
+%FRANKAKINEMATIC calculate the franka kinematic information
+% important methods:
+%   get_pose()  get the forward kinematic
+%   get_pose_jacobian() get the jacobian matrix (in DQ)
+%   get_geometric_jacobian() get the jacobian matrix (geometric)
+% The most improtant functionality is that this script could to get
+% the jacobian of robot at any point.
+
 % License:
 %   This script is part of the project and is based on DQ Robotics, which
 %   is licensed under the LGPL (Lesser General Public License). This file 
@@ -14,15 +22,8 @@
 %
 % Author: Haowen Yao - haowen.yao@tum.de
 classdef FrankaKinematic < handle
-    %FRANKAKINEMATIC calculate the franka kinematic information
-    % important methods:
-    %   get_pose()  get the forward kinematic
-    %   get_pose_jacobian() get the forward kinematic 
-    % The most improtant functionality is that this script could to get
-    % the jacobian of robot at any point.
-    
     properties %(SetAccess = immutable)
-        % the DH table of the robot
+        % the DH information of the robot
         theta
         d
         a

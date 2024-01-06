@@ -1,3 +1,6 @@
+%BARSPHERECONTACT the physical calculation on how bar-model robot and sphere robot take into
+% contact.
+
 % This file is code of LCQP_planner_core project:
 %   This script is the unreleased version of the project only for internal 
 %   circulation. Any modification, distribution, private or commercial use 
@@ -7,8 +10,6 @@
 % Contributor: Haowen Yao 
 function [contactDist, contactPtObs, contactPtRobot, ...
           contactNormal, contactTransJacobian, contactTransJacobianGeometric] = barSphereContact(model,obstacle,q,iLink)
-%BARSPHERECONTACT the physical calculation on how bar-model robot and sphere robot take into
-% contact.
     arguments
         model RobotModelFrankaBar
         obstacle ObstacleSphere

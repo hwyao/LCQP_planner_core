@@ -1,7 +1,8 @@
-classdef ObstacleSphere < IObstacle
-    %CLASSNAME Summary of this class goes here
-    %   Detailed explanation goes here
+%CLASSNAME Summary of this class goes here
+%   Detailed explanation goes here
 
+% Contributor: Haowen Yao
+classdef ObstacleSphere < IObstacle
     properties (SetAccess = immutable)
         name
 

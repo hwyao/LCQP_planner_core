@@ -1,3 +1,6 @@
+%CONTROLLERLCQP The planner based on Quadratic Programs with Linear
+% Complementarity Constraints
+
 % This file is code of LCQP_planner_core project:
 %   This script is the unreleased version of the project only for internal 
 %   circulation. Any modification, distribution, private or commercial use 
@@ -6,9 +9,6 @@
 %   
 % Contributor: Haowen Yao 
 classdef ControllerLCQP < IController
-    %CONTROLLERLCQP The planner based on Quadratic Programs with Linear 
-    % Complementarity Constraints 
-    
     % inherited propeties
     properties
         robotModel = RobotModelFrankaBar.empty
@@ -26,20 +26,28 @@ classdef ControllerLCQP < IController
 
     % planner specific properties
     properties
+        % Last output of the planner. Stored for better initial guess of later solution. 
         xLast(:,1) double
         
+        % Goal of the planner. Here we accept the goal as position.
         goal(3,1) double
 
+        % constant for main task c*J*dx
         constMainTask = 1
 
+        % constant for collision avoidance h*J1_1*N1_1*qdot
         constContactTask = 0.001
 
+        % the upper and lower bound for each status in solver
         solverBound = 100
 
-        saftyDistance = 0.1
+        % the safety distance between robot bar and 
+        safetyDistance = 0.1
 
+        % the link that considers obstacle avoidance
         linkObstacleAvoid = [3,4,5,7]
 
+        % the lambda parameter for damped jacobian inverse
         robustJinvLambda = 0.001
     end
     
@@ -63,16 +71,17 @@ classdef ControllerLCQP < IController
         end
 
         function nextStep(controller,obsPosList)
-            % update the obstacle positions
+            
+            % update obstacle positions
             for iObs = 1:numel(controller.obstacleList)
                 controller.obstacleList{iObs}.updateStatus(obsPosList(iObs,:));
             end
 
-            % some constants 
+            % get constants 
             cMainTask = controller.constMainTask;
             hContact = controller.constContactTask;
             changeMax = controller.solverBound;
-            saftyDist = controller.saftyDistance;
+            safetyDist = controller.safetyDistance;
             linkCode = controller.linkObstacleAvoid;
             lambda = controller.robustJinvLambda;
 
@@ -87,8 +96,9 @@ classdef ControllerLCQP < IController
             J = controller.robotModel.poseJacobian(qNow);
             J_pos = controller.robotModel.kinematic.translation_jacobian(J,fkNow);
             %invJ = pinv(J);
-            invJ_pos = J_pos' * pinv(J_pos*J_pos' + lambda * eye(4));
+            invJ_pos = J_pos' * pinv(J_pos*J_pos' + lambda * eye(4)); % use damped Jacobian inverse
 
+            % prepare size information
             nLink = controller.robotModel.kinematic.n_links;
             nObs = numel(controller.obstacleList);
             nLinkObs = numel(linkCode);
@@ -97,7 +107,8 @@ classdef ControllerLCQP < IController
                 nContacts = nLink;
             end
             nVariables = nLink + nContacts;
-
+            
+            % prepare data for LCQP
             % Algorithm explained:
             % The x for LCQP is = [qdot_1,qdot_2,qdot_3,....,qdot_nLink, v1_1, v1_2, ..., vnObs_nLinkObs];
             % For which:
@@ -143,7 +154,7 @@ classdef ControllerLCQP < IController
                 end
             end
 
-            lbR = - contactDistMtx + saftyDist;
+            lbR = - contactDistMtx + safetyDist;
             if (nContacts > nObs*nLinkObs)
                 lbR(nObs*nLinkObs+1:end) = 0;
             end
@@ -164,6 +175,7 @@ classdef ControllerLCQP < IController
                 params.x0 = controller.xLast;
             end
 
+            % call LCQPow planner
             [x, ~, ~] = LCQPow(Q, g, L, R, lbL, ubL, lbR, ubR, A, lbA, ubA, lb, ub, params);
             controller.xLast = x;
             qdot = x(1:nLink,1);

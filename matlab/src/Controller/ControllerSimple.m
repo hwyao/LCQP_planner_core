@@ -1,6 +1,7 @@
+% CCONTROLLERSIMPLE the simple CLIK planner without collision avoidance.
+
 % Contributor: Anirban Sinha
 classdef ControllerSimple < IController    
-    
     % inherited propeties
     properties
         robotModel = RobotModelFrankaBar.empty
@@ -18,8 +19,10 @@ classdef ControllerSimple < IController
 
     % planner specific properties
     properties
+        % Goal of the planner. Here we accept the goal as position.
         goal(3,1) double
 
+        % constant for main task c*J*dx
         constMainTask = 0.005;
     end
     
@@ -43,6 +46,8 @@ classdef ControllerSimple < IController
         end
 
         function nextStep(controller)
+
+            % get constants
             cMainTask = controller.constMainTask;
 
             % get coordiate status
@@ -59,7 +64,7 @@ classdef ControllerSimple < IController
             qdot = Jg_corrected' * ((Jg_corrected*Jg_corrected') \ (velToGoalPadded));
 
             % update the joint configuration
-            controller.q = controller.q + hContact * qdot;
+            controller.q = controller.q + qdot;
 
             % update the status
             controller.stepSend();

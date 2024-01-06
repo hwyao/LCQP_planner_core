@@ -1,8 +1,8 @@
+%CONTROLLERLCPATH The planner based on Path Solver with Linear Complementarity 
+% Constraints
+
 % Contributor: Anirban Sinha, Riddhiman Laha
 classdef ControllerLCPath < IController   
-    %CONTROLLERLCPath The planner based on Path Solver with Linear 
-    % Complementarity Constraints 
-    
     % inherited propeties
     properties
         robotModel = RobotModelFrankaBar.empty
@@ -20,14 +20,19 @@ classdef ControllerLCPath < IController
 
     % planner specific properties
     properties
+        % (Last) output of the planner. Stored for better initial guess of later solution. 
         z(:,1) double
         
+        % Goal of the planner. Here we accept the goal as position.
         goal(3,1) double
 
+        % constant for main task c*J*dx
         constMainTask = 0.5
 
+        % constant for collision avoidance
         constContactTask = 0.01
 
+        % the link that considers obstacle avoidance
         linkObstacleAvoid = [3,4,5,7]
     end
     
@@ -51,12 +56,13 @@ classdef ControllerLCPath < IController
         end
 
         function nextStep(controller,obsPosList)
-            % update the obstacle positions
+            
+            % update obstacle positions
             for iObs = 1:numel(controller.obstacleList)
                 controller.obstacleList{iObs}.updateStatus(obsPosList(iObs,:))
             end
 
-            % some constants 
+            % get constants 
             cMainTask = controller.constMainTask;
             beta = controller.constContactTask;
             linkCode = controller.linkObstacleAvoid;
@@ -68,9 +74,11 @@ classdef ControllerLCPath < IController
             posGoal = controller.goal;
             velToGoal = cMainTask * (posGoal - posNow) / norm(posGoal - posNow);
 
+            % prepare size information
             nLink = controller.robotModel.kinematic.n_links;
             nObs = numel(controller.obstacleList);
 
+            % prepare data for LCPath
             contactDistMtx = zeros(1, numel(linkCode));            
             contactNormalMtx = zeros(6, numel(linkCode));
             contactJacobMtx = zeros(6,nLink,numel(linkCode));
@@ -100,21 +108,18 @@ classdef ControllerLCPath < IController
             velToGoalPadded = [velToGoal; zeros(3, 1)];
             Jg = controller.robotModel.kinematic_extra.get_geometric_jacobian(qNow);
 
-            % just reorganizing Jg such that top three rows are for linear
+            % reorganizing Jg such that top three rows are for linear
             % and bottom three rows are for angular velocities
             Jg_corrected = [Jg(4:6, :); Jg(1:3, :)];
             ip_task2js = beta * Jg_corrected' * ((Jg_corrected*Jg_corrected') \ (velToGoalPadded));
 
-
             % Set the global variables for PATH solver to use
             setGlobalVariables(contactJacobMtx, contactNormalMtx, contactDistMtx, ip_task2js, qNow, length(linkCode));
-          
-            % Set the bounds of unknowns for PATH Solver
+
+            % call the PATH solver
             l = repelem(-Inf,11);
             u = repelem(Inf,11);
             l(1, 8:11) = 0;   % since complementarity velocity is always >= 0 
-            
-            % call the PATH solver
             [controller.z, ~, ~] = pathmcp(controller.z, l, u, 'mcpfuncjacEval2_mex');
             controller.q = controller.z(1:7, 1);
 

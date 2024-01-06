@@ -1,3 +1,7 @@
+% the script that uses matlab-codegen-helper-raw to generate
+% mcpfuncjacEval2 into the mex function.
+
+% Contributor: Haowen Yao
 clear
 clc
 

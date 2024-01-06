@@ -1,8 +1,8 @@
-function [f, J, domerr]= mcpfuncjacEval2(z,jacflag)
-    %#codegen
+function [f, J, domerr]= mcpfuncjacEval2(z,jacflag)     %#codegen
     % MCPFUNCJACEVAL the jacobian function used in pathmex mcppath. The
     % function will be used as the 4th parameter (cpfj) of mcppath
     % Use mutiple global variables.
+    % Contributor: Anirban Sinha
     global contact_normal; global dista; global q_o; global v_ts2js; %#ok<*GVMIS>
     global jcon_array;     global dof;   global h;   global safe_dist;
     global numColliLink;

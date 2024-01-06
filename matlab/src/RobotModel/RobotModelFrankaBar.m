@@ -1,3 +1,5 @@
+%ROBOTMODELBAR The franka Emika robot model with bar convention
+
 % This file is code of LCQP_planner_core project:
 %   This script is the unreleased version of the project only for internal 
 %   circulation. Any modification, distribution, private or commercial use 
@@ -6,8 +8,6 @@
 %   
 % Contributor: Haowen Yao 
 classdef RobotModelFrankaBar < IRobotModel
-    %ROBOTMODELBAR The franka Emika robot model with bar convention
-    
     properties (SetAccess=immutable)
         DH =    [0,      0,      0,      0,      0,          0,      0;
                  0.333,  0,      0.316,  0,      0.384,      0,      0;
