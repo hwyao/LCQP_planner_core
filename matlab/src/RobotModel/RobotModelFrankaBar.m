@@ -38,7 +38,7 @@ classdef RobotModelFrankaBar < IRobotModel
             end
 
             modelName = subsref(split(robotName,"#"),struct('type', '()', 'subs', {{1}}));
-            if ~isequal("FrankaFixed",modelName) && ~isequal("Franka",modelName)
+            if ~isequal("FrankaFix",modelName) && ~isequal("Franka",modelName)
                 error("Please input a Franka model.");
             end
             jointVrepName = "/" + modelName + "/" + model.jointName; 
