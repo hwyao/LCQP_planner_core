@@ -62,4 +62,5 @@ while controller.checkEnd() == false
     % push the controller to next step
     controller.nextStep(obsPosList);
 end
+
 controller.stopSimulation();

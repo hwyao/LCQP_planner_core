@@ -23,13 +23,12 @@ classdef ControllerSimple < IController
         goal(3,1) double
 
         % constant for main task c*J*dx
-        constMainTask = 0.005;
+        constMainTask = 0.0005;
     end
     
     methods
-        function controller = ControllerSimple(robotModel,obstacleList,goal)
+        function controller = ControllerSimple(robotModel,goal)
             controller.robotModel = robotModel;
-            controller.obstacleList = obstacleList;
             controller.q = robotModel.fetchStatus();
             controller.goal = goal;
         end
