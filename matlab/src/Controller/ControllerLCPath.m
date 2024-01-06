@@ -71,15 +71,10 @@ classdef ControllerLCPath < IController
             nLink = controller.robotModel.kinematic.n_links;
             nObs = numel(controller.obstacleList);
 
-            % /////////////////////////////////////////
-            % % % Initialize the contact distance matrix,
-            % contact normal matrix and contact jacobian matrix
             contactDistMtx = zeros(1, numel(linkCode));            
             contactNormalMtx = zeros(6, numel(linkCode));
             contactJacobMtx = zeros(6,nLink,numel(linkCode));
-            % /////////////////////////////////////////
 
-            % my additions
             for iLink = 1:numel(linkCode)
                 linkCodeNow = linkCode(iLink);
                 minDist = 1e2;
@@ -110,21 +105,13 @@ classdef ControllerLCPath < IController
             Jg_corrected = [Jg(4:6, :); Jg(1:3, :)];
             ip_task2js = beta * Jg_corrected' * ((Jg_corrected*Jg_corrected') \ (velToGoalPadded));
 
-            % % % for iLink = 1:numel(linkCode)
-            % % %     linkCodeNow = linkCode(iLink);
-            % % %     contactJacobMtx(:, 1:linkCodeNow, iLink) = Jg_corrected(:, 1:linkCodeNow);
-            % % % end
 
             % Set the global variables for PATH solver to use
             setGlobalVariables(contactJacobMtx, contactNormalMtx, contactDistMtx, ip_task2js, qNow, length(linkCode));
-
-            % /////////////////////////////////////////
-            % % % PATH related setup            
+          
             % Set the bounds of unknowns for PATH Solver
-            for j = 1 : 11
-                l(j) = -Inf; 
-                u(j) = Inf;
-            end
+            l = repelem(-Inf,11);
+            u = repelem(Inf,11);
             l(1, 8:11) = 0;   % since complementarity velocity is always >= 0 
             
             % call the PATH solver
