@@ -9,33 +9,39 @@ classdef ControllerLCQP < IController
     %CONTROLLERLCQP The planner based on Quadratic Programs with Linear 
     % Complementarity Constraints 
     
+    % inherited propeties
     properties
-        %%%%%%%%%%%%%% handle properties %%%%%%%%%%%%%%
         robotModel = RobotModelFrankaBar.empty
-
         obstacleList = {}
-
-        %%%%%%%%%%%%%% simulation properties %%%%%%%%%%%%%%
-        dt = 1e-2
-
-        toleranceEnd = 1e-2
-
-        maxEndCount = 3
-
-        maxStep = 1000
-
-        %%%%%%%%%%%%% simulation status %%%%%%%%%%%%%%%%%%%%%
-        q
-
-        currentEndCount = 0
-
-        currentStep = 0
-    
-    xLast
         
-%%%%%%%%%%%%% simulation goal %%%%%%%%%%%%%%%%%%%%%%%
+        dt = 1e-2
+        toleranceEnd = 1e-2
+        maxEndCount = 3
+        maxStep = 1000
+        
+        q
+        currentEndCount = 0
+        currentStep = 0
+    end
+
+    % planner specific properties
+    properties
+        xLast(:,1) double
+        
         goal(3,1) double
-            end
+
+        constMainTask = 1
+
+        constContactTask = 0.001
+
+        solverBound = 100
+
+        saftyDistance = 0.1
+
+        linkObstacleAvoid = [3,4,5,7]
+
+        robustJinvLambda = 0.001
+    end
     
     methods
         function controller = ControllerLCQP(robotModel,obstacleList,goal)
@@ -62,13 +68,13 @@ classdef ControllerLCQP < IController
                 controller.obstacleList{iObs}.updateStatus(obsPosList(iObs,:));
             end
 
-            % some constants (could be later moved into the class property)
-            cMainTask = 1;
-            hContact = 0.001;
-            changeMax = 100;
-            saftyDist = 0.1;
-            linkCode = [3,4,5,7];
-            lambda = 0.001;
+            % some constants 
+            cMainTask = controller.constMainTask;
+            hContact = controller.constContactTask;
+            changeMax = controller.solverBound;
+            saftyDist = controller.saftyDistance;
+            linkCode = controller.linkObstacleAvoid;
+            lambda = controller.robustJinvLambda;
 
             % get coordiate status
             qNow = controller.q;

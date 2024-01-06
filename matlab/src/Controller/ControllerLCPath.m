@@ -2,27 +2,33 @@
 classdef ControllerLCPath < IController   
     %CONTROLLERLCPath The planner based on Path Solver with Linear 
     % Complementarity Constraints 
+    
+    % inherited propeties
     properties
-        %%%%%%%%%%%%%% handle properties %%%%%%%%%%%%%%
         robotModel = RobotModelFrankaBar.empty
         obstacleList = {}
-
-        %%%%%%%%%%%%%% simulation properties %%%%%%%%%%%%%%
+        
         dt = 1e-2
         toleranceEnd = 1e-2
         maxEndCount = 3
         maxStep = 1000
-
-        %%%%%%%%%%%%% simulation status %%%%%%%%%%%%%%%%%%%%%
+        
         q
         currentEndCount = 0
         currentStep = 0
-        xLast
-        z
-        loop_cnt = 0
+    end
 
-        %%%%%%%%%%%%% simulation goal %%%%%%%%%%%%%%%%%%%%%%%
+    % planner specific properties
+    properties
+        z(:,1) double
+        
         goal(3,1) double
+
+        constMainTask = 0.5
+
+        constContactTask = 0.01
+
+        linkObstacleAvoid = [3,4,5,7]
     end
     
     methods
@@ -124,16 +130,11 @@ classdef ControllerLCPath < IController
             
             % call the PATH solver
             [controller.z, ~, ~] = pathmcp(controller.z, l, u, 'mcpfuncjacEval2_mex');
-            controller.xLast = controller.z(1:7, 1);
             controller.q = controller.z(1:7, 1);
 
             % update the status
             controller.stepSend();
             controller.stepUpdateCounter();
-
-            % increase the loop count
-            controller.loop_cnt = controller.loop_cnt + 1;
-            fprintf("simulation step: %d\n", controller.loop_cnt);
         end
     end
 end
