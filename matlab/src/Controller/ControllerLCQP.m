@@ -150,16 +150,15 @@ classdef ControllerLCQP < IController
             for iObs = 1:nObs
                 for iLink = 1:numel(linkCode)
                     linkCodeNow = linkCode(iLink);
-                    [contactDist, ~, ~, ...
-                    contactNormal, contactTransJacobian, ...
-                    contactTransJacobianGeometric] = controller.robotModel.detectContact(controller.obstacleList{iObs},qNow,linkCodeNow);
+                    [contactDist, ~, ~, contactNormal, contactTransJacobian, ~] = ...
+                        controller.robotModel.detectContact(controller.obstacleList{iObs},qNow,linkCodeNow);
                     iNum = (iObs-1)*nLinkObs + iLink;
                     contactDistMtx(iNum) = contactDist;
                     contactNormalMtx(iNum,:) = contactNormal;
                     contactJacobMtx(:,1:linkCodeNow,iNum) = contactTransJacobian;
                     contactNormalDQ = DQ(contactNormal);
     
-                    R(iNum,1:nLink) = hContact * contactNormalDQ.vec4' * contactJacobMtx(:,:,iNum); % validate this later.
+                    R(iNum,1:nLink) = hContact * contactNormalDQ.vec4' * contactJacobMtx(:,:,iNum); 
                     J_temp = contactJacobMtx(:,:,iNum);
                     JDinv = J_temp' * pinv(J_temp*J_temp' + lambda * eye(4));
                     A(1:nLink,iNum+nLink) = -JDinv * contactNormalDQ.vec4;

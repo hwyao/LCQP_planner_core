@@ -53,7 +53,6 @@ function [contactDist, contactPtObs, contactPtRobot, ...
     J = model.kinematic_extra.get_pose_jacobian(q,iLink,projectToLinkLength);
     contactTransJacobian = 2*haminus4(x.P')*J(5:8,:)+2*hamiplus4(x.D)*DQ.C4*J(1:4,:);
     CJ4_2_J3= [zeros(3,1) eye(3)];
-    % % % CJ4_2_J3*2*( hamiplus4(xm.D)*C4m*Jacob(1:4,:) +  haminus4(xm.P')*Jacob(5:8,:)  );
     contactTransJacobianGeometric = 2*CJ4_2_J3*(haminus4(x.P')*J(5:8,:) + hamiplus4(x.D)*DQ.C4*J(1:4,:));
 end
 

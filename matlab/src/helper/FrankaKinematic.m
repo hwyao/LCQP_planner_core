@@ -224,7 +224,7 @@ classdef FrankaKinematic < handle
         
         function J = get_pose_jacobian(obj,q,ith,length)
             % GET_POSE_JACOBIAN to get the Jacobian of the robot with the ith link with the
-            % corresponding link length.
+            % corresponding link length. 
             % Usage:
             %   get_pose_jacobian(q)
             %   get_pose_jacobian(q,ith)
@@ -289,6 +289,20 @@ classdef FrankaKinematic < handle
                     J(:,n) = vec8(j);
                 end
             end
+        end
+
+        function J = get_geometric_jacobian(obj,q)
+            % GET_GEOMETRIC_JACOBIAN to get geometric Jacobian of the robot with specific configuration
+            % Usage:
+            %   get_pose_jacobian(q)
+            C8 = diag([-1 ones(1,3) -1 ones(1,3)]');
+            C4m = -C8(1:4,1:4);
+            CJ4_2_J3= [zeros(3,1) eye(3)];
+
+            Jacob = obj.get_pose_jacobian(q);
+            xm = obj.get_pose(q);
+            J(1:3,:) = CJ4_2_J3*2*haminus4(xm.P')*Jacob(1:4,:);
+            J(4:6,:) = CJ4_2_J3*2*( hamiplus4(xm.D)*C4m*Jacob(1:4,:) +  haminus4(xm.P')*Jacob(5:8,:));
         end
     end
 end

@@ -56,10 +56,10 @@ classdef ControllerLCPath < IController
                 controller.obstacleList{iObs}.updateStatus(obsPosList(iObs,:))
             end
 
-            % some constants (could be later moved into the class property)
-            cMainTask = 0.5;
-            beta = 0.01;
-            linkCode = [3,4,5,7];
+            % some constants 
+            cMainTask = controller.constMainTask;
+            beta = controller.constContactTask;
+            linkCode = controller.linkObstacleAvoid;
 
             % get coordiate status
             qNow = controller.q;
@@ -67,7 +67,6 @@ classdef ControllerLCPath < IController
             posNow = fkNow.translation.vec3;
             posGoal = controller.goal;
             velToGoal = cMainTask * (posGoal - posNow) / norm(posGoal - posNow);
-
 
             nLink = controller.robotModel.kinematic.n_links;
             nObs = numel(controller.obstacleList);
@@ -95,8 +94,8 @@ classdef ControllerLCPath < IController
                 end
                 % Now compute the relevant variables for the closest
                 % obstacle of the respective robot link.
-                [contactDist, ~, ~, contactNormal, contactTransJacobian, ...
-                    contactTransJacobianGeometric] = controller.robotModel.detectContact(controller.obstacleList{minDistObs},qNow,linkCodeNow);
+                [contactDist, ~, ~, contactNormal, ~, contactTransJacobianGeometric] = ...
+                    controller.robotModel.detectContact(controller.obstacleList{minDistObs},qNow,linkCodeNow);
                 contactDistMtx(1, iLink) = contactDist;
                 contactNormalMtx(1:3, iLink) = contactNormal;
                 contactJacobMtx(1:3,1:linkCodeNow,iLink) = contactTransJacobianGeometric;
@@ -104,7 +103,7 @@ classdef ControllerLCPath < IController
 
             % compute the desired joint rate
             velToGoalPadded = [velToGoal; zeros(3, 1)];
-            Jg = geomJ(controller.robotModel.kinematic, qNow);
+            Jg = controller.robotModel.kinematic_extra.get_geometric_jacobian(qNow);
 
             % just reorganizing Jg such that top three rows are for linear
             % and bottom three rows are for angular velocities

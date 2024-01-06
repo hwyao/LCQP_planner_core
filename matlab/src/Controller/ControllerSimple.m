@@ -54,7 +54,7 @@ classdef ControllerSimple < IController
 
             % compute the desired joint rate
             velToGoalPadded = [velToGoal; zeros(3, 1)];
-            Jg = geomJ(controller.robotModel.kinematic, qNow);
+            Jg = controller.robotModel.kinematic_extra.get_geometric_jacobian(qNow);
             Jg_corrected = [Jg(4:6, :); Jg(1:3, :)];
             qdot = Jg_corrected' * ((Jg_corrected*Jg_corrected') \ (velToGoalPadded));
 
