@@ -4,3 +4,6 @@
 [submodule "matlab/submodule/matlab-codegen-helper-raw"]
 	path = matlab/submodule/matlab-codegen-helper-raw
 	url = https://github.com/hwyao/matlab-codegen-helper-raw
+[submodule "ros/src/franka_ros"]
+	path = ros/src/franka_ros
+	url = https://github.com/frankaemika/franka_ros/
