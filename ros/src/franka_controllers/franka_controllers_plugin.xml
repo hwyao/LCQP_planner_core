@@ -1,0 +1,7 @@
+<library path="lib/libfranka_controllers">
+  <class name="franka_controllers/JointPositionController" type="franka_controllers::JointPositionController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      A controller that executes a short motion based on joint position to demonstrate correct usage
+    </description>
+  </class>
+</library>
