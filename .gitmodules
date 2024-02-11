@@ -7,3 +7,6 @@
 [submodule "ros/src/franka_ros"]
 	path = ros/src/franka_ros
 	url = https://github.com/frankaemika/franka_ros/
+[submodule "ros/src/franka_controllers/submodule/LCQPow"]
+	path = ros/src/franka_controllers/submodule/LCQPow
+	url = https://github.com/hallfjonas/LCQPow/
