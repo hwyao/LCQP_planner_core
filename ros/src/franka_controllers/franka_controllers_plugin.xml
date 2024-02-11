@@ -4,4 +4,10 @@
       A controller that executes a short motion based on joint position to demonstrate correct usage
     </description>
   </class>
+
+  <class name="franka_controllers/LCQPControllerFrankaModel" type="franka_controllers::LCQPControllerFrankaModel" base_class_type="controller_interface::ControllerBase">
+    <description>
+      A controller that uses the LCQPow to control the robot. Works without using other ROS packages. Use franka model interface as robot model.
+    </description>
+  </class>
 </library>

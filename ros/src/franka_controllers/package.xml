@@ -58,6 +58,7 @@
   <depend>franka_control</depend>
   <depend>hardware_interface</depend>
   <depend>pluginlib</depend>
+  <depend>geometry_msgs</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
