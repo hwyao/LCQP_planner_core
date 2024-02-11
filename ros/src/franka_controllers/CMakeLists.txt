@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.2.0)
 project(franka_controllers)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
@@ -9,11 +9,74 @@ project(franka_controllers)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  controller_interface
+  franka_hw
+  franka_control
+  hardware_interface
+  pluginlib
+  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+find_package(Franka)
+find_package(Eigen3 REQUIRED)
+
+# include(ExternalProject)
+# ExternalProject_Add(LCQPow
+#   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow
+#   BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build
+#   BUILD_BYPRODUCTS
+#     ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}qpOASES${CMAKE_SHARED_LIBRARY_SUFFIX}
+#     ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}osqp${CMAKE_SHARED_LIBRARY_SUFFIX}
+#     ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}lcqpow${CMAKE_SHARED_LIBRARY_SUFFIX}
+#   INSTALL_COMMAND ""
+# )
+
+
+add_library(qpOASES_lib SHARED IMPORTED)
+# add_dependencies(qpOASES_lib LCQPow)
+set_target_properties(qpOASES_lib PROPERTIES
+  IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}qpOASES${CMAKE_SHARED_LIBRARY_SUFFIX}
+  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/qpoases/include
+)
+
+add_library(osqp_lib SHARED IMPORTED)
+# add_dependencies(osqp_lib LCQPow)
+set_target_properties(osqp_lib PROPERTIES
+  IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}osqp${CMAKE_SHARED_LIBRARY_SUFFIX}
+  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/osqp/include
+)
+
+##################### V1
+# add_library(LCQPow_lib SHARED IMPORTED)
+# add_dependencies(LCQPow_lib LCQPow)
+# set_target_properties(LCQPow_lib PROPERTIES
+#   IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}lcqpow${CMAKE_SHARED_LIBRARY_SUFFIX}
+#   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/include
+# )
+##################### V2
+# add_library(LCQPow_lib STATIC OBJECT
+#   ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}lcqpow${CMAKE_STATIC_LIBRARY_SUFFIX}
+# )
+# add_dependencies(LCQPow_lib LCQPow)
+# target_link_libraries(LCQPow_lib PUBLIC
+#   qpOASES_lib
+#   osqp_lib
+# )
+# target_include_directories(LCQPow_lib PUBLIC
+#   ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/osqp/include
+#   ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/qpoases/include
+#   ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/include
+# )
+##################### V3
+add_library(LCQPow_lib SHARED IMPORTED)
+# add_dependencies(LCQPow_lib LCQPow)
+set_target_properties(LCQPow_lib PROPERTIES
+  IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}lcqpow${CMAKE_SHARED_LIBRARY_SUFFIX}
+  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/include
+)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -101,15 +164,16 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
- INCLUDE_DIRS include
- LIBRARIES franka_controllers
- CATKIN_DEPENDS 
-  controller_interface
-  franka_hw
-  franka_control
-  hardware_interface
-  pluginlib
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES franka_controllers
+  CATKIN_DEPENDS 
+    controller_interface
+    franka_hw
+    franka_control
+    hardware_interface
+    pluginlib
+    geometry_msgs
+#  DEPENDS Franka
 )
 
 ###########
@@ -121,6 +185,11 @@ catkin_package(
 include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
+  ${Franka_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/osqp/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/qpoases/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/include
 )
 
 ## Declare a C++ library
@@ -129,12 +198,22 @@ include_directories(
 # )
 add_library(${PROJECT_NAME} SHARED
   src/joint_position_controller.cpp
+  src/LCQP_controller_frankaModel.cpp
 )
+
 target_link_libraries(${PROJECT_NAME} PUBLIC
   ${catkin_LIBRARIES}
+  ${EIGEN3_LIBRARIES}
+  ${Franka_LIBRARIES}
+  qpOASES_lib
+  osqp_lib
+  LCQPow_lib
 )
 target_include_directories(${PROJECT_NAME} PUBLIC
   include
+  #${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/osqp/include
+  #${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/qpoases/include
+  #${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/include
 )
 
 ## Add cmake target dependencies of the library
