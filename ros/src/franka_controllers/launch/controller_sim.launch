@@ -33,6 +33,7 @@
                 -J $(arg arm_id)_finger_joint2 0.001"
        />
   <arg name="interactive_marker" default="$(eval arg('controller') == 'cartesian_impedance_example_controller')" doc="Should the interactive marker node be started?" />
+  <arg name="obstacles_marker" default="(eval arg('controller') == 'LCQP_controller_multipleObstacles')" doc="Should the obstacles marker scene be started?" />
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch" if="$(arg gazebo)">
     <arg name="world_name" value="$(arg world)"/>
@@ -53,7 +54,7 @@
   </param>
 
   <rosparam file="$(find franka_gazebo)/config/franka_hw_sim.yaml" subst_value="true" />
-  <rosparam file="$(find franka_controllers)/config/controller_parameters.yaml" subst_value="true" />
+  <rosparam file="$(find franka_controllers)/config/controller_parameters.yaml" subst_value="true" /> <!--parameter-->
 
   <param name="m_ee" value="0.76" if="$(arg use_gripper)" />
 
@@ -97,6 +98,6 @@
     <remap to="cartesian_impedance_example_controller/equilibrium_pose" from="equilibrium_pose" />
   </node>
 
-  <node pkg="rviz" type="rviz" output="screen" name="rviz" args="-f $(arg arm_id)_link0 -d $(find franka_example_controllers)/launch/rviz/franka_description_with_marker.rviz - -splash-screen $(find franka_visualization)/splash.png" if="$(arg rviz)"/> 
+  <node pkg="rviz" type="rviz" output="screen" name="rviz" args="-f $(arg arm_id)_link0 -d $(find franka_controllers)/launch/franka_with_obstacles.rviz - -splash-screen $(find franka_visualization)/splash.png" if="$(arg rviz)"/> 
 
 </launch>

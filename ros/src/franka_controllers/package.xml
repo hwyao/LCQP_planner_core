@@ -59,6 +59,8 @@
   <depend>hardware_interface</depend>
   <depend>pluginlib</depend>
   <depend>geometry_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>pal_statistics</depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

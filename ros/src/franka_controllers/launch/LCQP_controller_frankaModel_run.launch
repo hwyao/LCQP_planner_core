@@ -1,5 +1,5 @@
 <launch>
-  <arg name="robot_ip" default="192.168.3.108"/>
+  <arg name="robot_ip" default="192.168.3.127"/>
   <include file="$(find franka_control)/launch/franka_control.launch" pass_all_args="true"/>
   <arg name="arm_id" default="panda"/>
   <rosparam command="load" file="$(find franka_controllers)/config/controller_parameters.yaml" subst_value="true" />

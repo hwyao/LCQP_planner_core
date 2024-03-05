@@ -10,4 +10,10 @@
       A controller that uses the LCQPow to control the robot. Works without using other ROS packages. Use franka model interface as robot model.
     </description>
   </class>
+
+  <class name="franka_controllers/LCQPControllerMultipleObstacle" type="franka_controllers::LCQPControllerMultipleObstacle" base_class_type="controller_interface::ControllerBase">
+    <description>
+      A controller that uses the LCQPow to control the robot. Works without using other ROS packages. Use multiple obstacles.
+    </description>
+  </class>
 </library>
