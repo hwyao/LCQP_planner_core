@@ -42,17 +42,18 @@ class LCQPControllerFrankaModel : public controller_interface::MultiInterfaceCon
 
   ros::Duration elapsed_time_;
 
-  std::vector<double> goal_;        /// Goal of the planner. Here we accept the goal as position.
-  double constMainTask_;            /// constant for main task c*J*dx
-  double constContactTask_;         /// constant for collision avoidance h*J1_1*N1_1*qdot
-  double constError_;               /// constant for error term by qDot = c*qDot
-  double solverBound_;              /// the upper and lower bound for each status in solver
-  double safetyDistance_;           /// the safety distance between robot bar and obstacle
-  std::vector<double> linkObstacleAvoid_; /// the link that considers obstacle avoidance
-  double robustJinvLambda_;         /// the lambda parameter for damped jacobian inverse
-  double tolerance_;                /// the tolerance for the end condition
-  double maximumTime_;              /// the maximum time for the planner (not used in this version)
-  double LowPass_;                  /// the low pass filter for the velocity
+  std::vector<double> goal_ = {0.1, 0.450, 0.5}; /// Goal of the planner. Here we accept the goal as position.
+  double constMainTask_ = 0.1;                   /// constant for main task c*J*dx
+  double constContactTask_ = 0.006;              /// constant for collision avoidance h*J1_1*N1_1*qdot
+  double constError_ = 0.2;                      /// constant for error term by qDot = c*qDot
+  double solverBound_ = 10;                      /// the upper and lower bound for each status in solver
+  double safetyDistance_ = 0.15;                 /// the safety distance between robot bar and obstacle
+  std::vector<double> linkObstacleAvoid_;        /// the link that considers obstacle avoidance
+  double robustJinvLambda_ = 0.001;              /// the lambda parameter for damped jacobian inverse
+  double tolerance_ = 0.01;                      /// the tolerance for the end condition
+  double maximumTime_ = 60;                      /// the maximum time for the planner (not used in this version)
+  double LowPassJoint_ = 0;                      /// the IIR low pass filter for the velocity
+  double LowPassObs_ = 0;                        /// the IIR low pass filter for the obstacle position
 
   double obstacleRadius_; /// the radius of the obstacle
 

@@ -148,8 +148,11 @@ bool LCQPControllerFrankaModel::init(hardware_interface::RobotHW* robot_hardware
   if(!node_handle.getParam("obstacleRadius", obstacleRadius_)){
     ROS_ERROR("LCQPControllerFrankaModel: Could not parse obstacleRadius");
   }
-  if(!node_handle.getParam("LowPass", LowPass_)){
+  if(!node_handle.getParam("LowPassJoint", LowPassJoint_)){
     ROS_ERROR("LCQPControllerFrankaModel: Could not parse LowPass");
+  }
+  if(!node_handle.getParam("LowPassObs", LowPassObs_)){
+    ROS_ERROR("LCQPControllerFrankaModel: Could not parse LowPassObs");
   }
 
   // set the running variables
@@ -340,7 +343,7 @@ void LCQPControllerFrankaModel::update(const ros::Time& /*time*/, const ros::Dur
 
   // filter the qDot (is disabled by setting LowPass_ = 0. But anyway we keep this here.)
   static VectorXd qDotFiltered = qDot;
-  double alpha = LowPass_ * 0.001;
+  double alpha = LowPassJoint_ * 0.001;
   qDotFiltered = qDot + alpha * (qDotFiltered - qDot);
 
   // save the result as initial guess for next iteration
@@ -434,9 +437,13 @@ std::tuple<double, Vector3d, Vector3d, Vector3d, MatrixXd> LCQPControllerFrankaM
 
 void LCQPControllerFrankaModel::obstaclePoseCallback(const geometry_msgs::PoseStampedConstPtr& msg) {
   std::lock_guard<std::mutex> guard(obstacle_pose_mutex_);
-  obstaclePosition_read_[0] = msg->pose.position.x;
-  obstaclePosition_read_[1] = msg->pose.position.y;
-  obstaclePosition_read_[2] = msg->pose.position.z;
+  double readX = msg->pose.position.x;
+  double readY = msg->pose.position.y;
+  double readZ = msg->pose.position.z;
+  double alpha = LowPassObs_ * 0.001;
+  obstaclePosition_read_[0] = readX + alpha*(obstaclePosition_read_[0] - readX);
+  obstaclePosition_read_[1] = readY + alpha*(obstaclePosition_read_[1] - readY);
+  obstaclePosition_read_[2] = readZ + alpha*(obstaclePosition_read_[2] - readZ);
   //ROS_INFO_STREAM_THROTTLE(0.2, "Read"<<obstaclePosition_[0] << " " << obstaclePosition_[1] << " " << obstaclePosition_[2]);
 }
 

@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   hardware_interface
   pluginlib
   geometry_msgs
+  visualization_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -23,56 +24,27 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Franka)
 find_package(Eigen3 REQUIRED)
 
-# include(ExternalProject)
-# ExternalProject_Add(LCQPow
-#   SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow
-#   BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build
-#   BUILD_BYPRODUCTS
-#     ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}qpOASES${CMAKE_SHARED_LIBRARY_SUFFIX}
-#     ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}osqp${CMAKE_SHARED_LIBRARY_SUFFIX}
-#     ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}lcqpow${CMAKE_SHARED_LIBRARY_SUFFIX}
-#   INSTALL_COMMAND ""
-# )
-
+include(ExternalProject)
+ExternalProject_Add(LCQPow
+  SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow
+  BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build
+  BUILD_COMMAND ${CMAKE_COMMAND} --build <BINARY_DIR>
+  INSTALL_COMMAND ""
+)
 
 add_library(qpOASES_lib SHARED IMPORTED)
-# add_dependencies(qpOASES_lib LCQPow)
 set_target_properties(qpOASES_lib PROPERTIES
   IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}qpOASES${CMAKE_SHARED_LIBRARY_SUFFIX}
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/qpoases/include
 )
 
 add_library(osqp_lib SHARED IMPORTED)
-# add_dependencies(osqp_lib LCQPow)
 set_target_properties(osqp_lib PROPERTIES
   IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}osqp${CMAKE_SHARED_LIBRARY_SUFFIX}
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/osqp/include
 )
 
-##################### V1
-# add_library(LCQPow_lib SHARED IMPORTED)
-# add_dependencies(LCQPow_lib LCQPow)
-# set_target_properties(LCQPow_lib PROPERTIES
-#   IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}lcqpow${CMAKE_SHARED_LIBRARY_SUFFIX}
-#   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/include
-# )
-##################### V2
-# add_library(LCQPow_lib STATIC OBJECT
-#   ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}lcqpow${CMAKE_STATIC_LIBRARY_SUFFIX}
-# )
-# add_dependencies(LCQPow_lib LCQPow)
-# target_link_libraries(LCQPow_lib PUBLIC
-#   qpOASES_lib
-#   osqp_lib
-# )
-# target_include_directories(LCQPow_lib PUBLIC
-#   ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/osqp/include
-#   ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/qpoases/include
-#   ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/include
-# )
-##################### V3
 add_library(LCQPow_lib SHARED IMPORTED)
-# add_dependencies(LCQPow_lib LCQPow)
 set_target_properties(LCQPow_lib PROPERTIES
   IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/lib/${CMAKE_FIND_LIBRARY_PREFIXES}lcqpow${CMAKE_SHARED_LIBRARY_SUFFIX}
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/include
@@ -86,26 +58,6 @@ set_target_properties(LCQPow_lib PROPERTIES
 ################################################
 ## Declare ROS messages, services and actions ##
 ################################################
-
-## To declare and build messages, services or actions from within this
-## package, follow these steps:
-## * Let MSG_DEP_SET be the set of packages whose message types you use in
-##   your messages/services/actions (e.g. std_msgs, actionlib_msgs, ...).
-## * In the file package.xml:
-##   * add a build_depend tag for "message_generation"
-##   * add a build_depend and a exec_depend tag for each package in MSG_DEP_SET
-##   * If MSG_DEP_SET isn't empty the following dependency has been pulled in
-##     but can be declared for certainty nonetheless:
-##     * add a exec_depend tag for "message_runtime"
-## * In this file (CMakeLists.txt):
-##   * add "message_generation" and every package in MSG_DEP_SET to
-##     find_package(catkin REQUIRED COMPONENTS ...)
-##   * add "message_runtime" and every package in MSG_DEP_SET to
-##     catkin_package(CATKIN_DEPENDS ...)
-##   * uncomment the add_*_files sections below as needed
-##     and list every .msg/.srv/.action file to be processed
-##   * uncomment the generate_messages entry below
-##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
 # add_message_files(
@@ -138,16 +90,6 @@ set_target_properties(LCQPow_lib PROPERTIES
 ## Declare ROS dynamic reconfigure parameters ##
 ################################################
 
-## To declare and build dynamic reconfigure parameters within this
-## package, follow these steps:
-## * In the file package.xml:
-##   * add a build_depend and a exec_depend tag for "dynamic_reconfigure"
-## * In this file (CMakeLists.txt):
-##   * add "dynamic_reconfigure" to
-##     find_package(catkin REQUIRED COMPONENTS ...)
-##   * uncomment the "generate_dynamic_reconfigure_options" section below
-##     and list every .cfg file to be processed
-
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
 # generate_dynamic_reconfigure_options(
 #   cfg/DynReconf1.cfg
@@ -173,7 +115,11 @@ catkin_package(
     hardware_interface
     pluginlib
     geometry_msgs
-#  DEPENDS Franka
+    visualization_msgs
+    pal_statistics
+  # DEPENDS 
+  #   EIGEN3
+  #   Franka
 )
 
 ###########
@@ -187,33 +133,26 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
   ${Franka_INCLUDE_DIRS}
-  ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/osqp/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/qpoases/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/include
 )
 
-## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/franka_controllers.cpp
-# )
 add_library(${PROJECT_NAME} SHARED
   src/joint_position_controller.cpp
   src/LCQP_controller_frankaModel.cpp
+  src/LCQP_controller_multipleObstacle.cpp
+  src/LCQP_controller.cpp
+  src/FrankaModel.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
   ${catkin_LIBRARIES}
   ${EIGEN3_LIBRARIES}
   ${Franka_LIBRARIES}
+  LCQPow_lib
   qpOASES_lib
   osqp_lib
-  LCQPow_lib
 )
 target_include_directories(${PROJECT_NAME} PUBLIC
   include
-  #${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/osqp/include
-  #${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/build/external/src/qpoases/include
-  #${CMAKE_CURRENT_SOURCE_DIR}/submodule/LCQPow/include
 )
 
 ## Add cmake target dependencies of the library
