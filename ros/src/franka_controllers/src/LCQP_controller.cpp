@@ -103,7 +103,7 @@ namespace LCQP_controller{
                 R.row(iNum).segment(0, nLink) = constContactTask_ * contactNormal.transpose() * contactTransJacobian;
                 
                 MatrixXd JDinv = contactTransJacobian.transpose() * (contactTransJacobian * contactTransJacobian.transpose() + robustJinvLambda_ * MatrixXd::Identity(3,3)).completeOrthogonalDecomposition().pseudoInverse();
-                A.block(0, iNum + nLink, nLink, 1) = -JDinv * contactNormal;
+                A.block(0, iNum + nLink, nLink, 1) = - constContactTask_ * JDinv * contactNormal;
             }
         }
 
@@ -181,7 +181,7 @@ namespace LCQP_controller{
                         {
                             R.row(iNum).segment(0, nLink) = constContactTask_ * contactNormal.transpose() * contactTransJacobian;
                             MatrixXd JDinv = contactTransJacobian.transpose() * (contactTransJacobian * contactTransJacobian.transpose() + robustJinvLambda_ * MatrixXd::Identity(3, 3)).completeOrthogonalDecomposition().pseudoInverse();
-                            A.block(0, iNum + nLink, nLink, 1) = -JDinv * contactNormal;
+                            A.block(0, iNum + nLink, nLink, 1) = - constContactTask_ * JDinv * contactNormal;
                         }
                     }
                 }

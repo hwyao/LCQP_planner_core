@@ -263,7 +263,7 @@ void LCQPControllerFrankaModel::update(const ros::Time& /*time*/, const ros::Dur
       //MatrixXd JDinv = contactTransJacobian.transpose();
       MatrixXd JDinv = contactTransJacobian.transpose() * (contactTransJacobian * contactTransJacobian.transpose() + robustJinvLambda_ * MatrixXd::Identity(3,3)).completeOrthogonalDecomposition().pseudoInverse();
       
-      A.block(0, iLink + nLink, nLink, 1) = -JDinv * contactNormal;
+      A.block(0, iLink + nLink, nLink, 1) = - constContactTask_ * JDinv * contactNormal;
   }
 
   VectorXd lbR = -contactDistMtx + VectorXd::Constant(nContacts, safetyDistance_);
