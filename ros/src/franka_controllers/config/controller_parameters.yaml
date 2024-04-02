@@ -61,7 +61,7 @@ LCQP_controller_frankaModel:
   obstaclePosition: [0.29, 0.27, 0.54]
   obstacleRadius: 0.1
   constMainTask: 0.1    # 0.5
-  constContactTask: 0.005
+  constContactTask: 0.05
   constError: 0.2
   solverBound: 100
   safetyDistance: 0.15
@@ -69,7 +69,7 @@ LCQP_controller_frankaModel:
   robustJinvLambda: 0.001
   maximumTime: 40.0
   tolerance: 0.01
-  LowPassJoint: 800
+  LowPassJoint: 500
   LowPassObs: 800
 
 LCQP_controller_multipleObstacle:
@@ -86,7 +86,7 @@ LCQP_controller_multipleObstacle:
   goal: [0.5, 0.4, 0.3]
   obstacleRadius: 0.1
   constMainTask: 0.2    # 0.5
-  constContactTask: 0.005
+  constContactTask: 0.05
   constError: 0.2
   solverBound: 100
   safetyDistance: 0.15
