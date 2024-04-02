@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/opt/ros/${ROS_DISTRO}/include/**",
+        "/usr/include/**",
+        "${workspaceFolder}/ros/devel/include/**",
+        "${workspaceFolder}/ros/src/franka_controllers/include/**",
+        "${workspaceFolder}/ros/src/franka_controllers/submodule/LCQPow/include/**",
+        "${workspaceFolder}/ros/src/franka_controllers/submodule/LCQPow/build/external/src/osqp/include/**",
+        "${workspaceFolder}/ros/src/franka_controllers/submodule/LCQPow/build/external/src/qpoases/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
