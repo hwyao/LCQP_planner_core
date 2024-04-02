@@ -163,19 +163,23 @@ bool LCQPControllerMultipleObstacle::init(hardware_interface::RobotHW* robot_har
   #endif
 
   #ifdef SCENE_STATIC
-    obsList_.push_back(Vector3d(0.5, 0.25, 0.55)); 
+    obsList_.push_back(Vector3d(0.4, 0.35, 0.35)); 
     obsRadiusList_.push_back(0.05);
-    //obsList_.push_back(Vector3d(0.5, 0.15, 0.75)); 
-    //obsRadiusList_.push_back(0.05);
-    obsList_.push_back(Vector3d(0.5, 0.00, 0.75)); 
-    obsRadiusList_.push_back(0.05);
-    //obsList_.push_back(Vector3d(0.5, -0.15, 0.75));
-    //obsRadiusList_.push_back(0.05); 
-    obsList_.push_back(Vector3d(0.5, -0.25, 0.55));
+    obsList_.push_back(Vector3d(0.3, 0.30, 0.75)); 
+    obsRadiusList_.push_back(0.1);
+    // obsList_.push_back(Vector3d(0.5, 0.00, 0.75)); 
+    // obsRadiusList_.push_back(0.05);
+    obsList_.push_back(Vector3d(0.5, 0.10, 0.75));
+    obsRadiusList_.push_back(0.05); 
+    obsList_.push_back(Vector3d(0.5, -0.25, 0.45));
+    obsRadiusList_.push_back(0.1); 
+    // obsList_.push_back(Vector3d(0.1, 0.33, 0.70));
+    // obsRadiusList_.push_back(0.1); 
+    obsList_.push_back(Vector3d(0.4, 0.35, 0.45));
     obsRadiusList_.push_back(0.05); 
     goal_[0] = 0.65;
-    goal_[1] = 0.05;
-    goal_[2] = 0.4;
+    goal_[1] = 0.35;
+    goal_[2] = 0.25;
   #endif
 
   #ifdef SCENE_DYNAMIC

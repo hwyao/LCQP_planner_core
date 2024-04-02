@@ -188,7 +188,7 @@ Visualization Manager:
       Value: true
   Enabled: true
   Global Options:
-    Background Color: 48; 48; 48
+    Background Color: 255; 255; 255
     Default Light: true
     Fixed Frame: panda_link0
     Frame Rate: 30
@@ -214,25 +214,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.382266521453857
+      Distance: 2.246537208557129
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.1164703220129013
-        Y: 0.062056250870227814
-        Z: 0.2956809401512146
+        X: -0.06867711991071701
+        Y: 0.03453446179628372
+        Z: 0.48459818959236145
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5903981924057007
+      Pitch: 0.03539787977933884
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.9604001045227051
+      Yaw: 0.5554004907608032
     Saved: ~
 Window Geometry:
   Displays:

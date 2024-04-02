@@ -68,10 +68,10 @@ if __name__ == "__main__":
     box_marker.scale.x = 0.2
     box_marker.scale.y = 0.2
     box_marker.scale.z = 0.2
-    box_marker.color.r = 0.5
-    box_marker.color.g = 0.5
-    box_marker.color.b = 0.5
-    box_marker.color.a = 0.5
+    box_marker.color.r = 0
+    box_marker.color.g = 0
+    box_marker.color.b = 1
+    box_marker.color.a = 1
 
     box_control = InteractiveMarkerControl()
     box_control.always_visible = True
