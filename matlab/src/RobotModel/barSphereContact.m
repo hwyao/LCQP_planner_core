@@ -50,6 +50,8 @@ function [contactDist, contactPtObs, contactPtRobot, ...
 
     contactDist = norm(contactPtRobot - contactPtObs);
 
+    projectToLinkLength = 100;
+
     x = model.kinematic_extra.get_pose(q,iLink,projectToLinkLength);
     J = model.kinematic_extra.get_pose_jacobian(q,iLink,projectToLinkLength);
     contactTransJacobian = 2*haminus4(x.P')*J(5:8,:)+2*hamiplus4(x.D)*DQ.C4*J(1:4,:);
