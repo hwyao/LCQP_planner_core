@@ -40,4 +40,8 @@ matlab/remoteApiProto.m
 matlab/submodule/pathmex
 logfile.tmp
 
+# ignore the plotting output
+matlab/fig/
+
+# ignore the data output
 matlab/data/
