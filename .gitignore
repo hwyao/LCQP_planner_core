@@ -39,3 +39,5 @@ matlab/remoteApiProto.m
 # ignore the pathmex submodules and files
 matlab/submodule/pathmex
 logfile.tmp
+
+matlab/data/
