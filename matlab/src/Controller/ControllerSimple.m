@@ -13,6 +13,7 @@ classdef ControllerSimple < IController
         maxStep = 1000
         
         q
+        tick
         currentEndCount = 0
         currentStep = 0
     end

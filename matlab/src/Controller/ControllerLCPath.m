@@ -14,6 +14,7 @@ classdef ControllerLCPath < IController
         maxStep = 1000
         
         q
+        tick
         currentEndCount = 0
         currentStep = 0
     end
@@ -67,6 +68,7 @@ classdef ControllerLCPath < IController
             beta = controller.constContactTask;
             linkCode = controller.linkObstacleAvoid;
 
+            ht = tic;
             % get coordiate status
             qNow = controller.q;
             fkNow = controller.robotModel.fkm(qNow);
@@ -120,8 +122,10 @@ classdef ControllerLCPath < IController
             l = repelem(-Inf,11);
             u = repelem(Inf,11);
             l(1, 8:11) = 0;   % since complementarity velocity is always >= 0 
+            
             [controller.z, ~, ~] = pathmcp(controller.z, l, u, 'mcpfuncjacEval2_mex');
             controller.q = controller.z(1:7, 1);
+            controller.tick = toc(ht);
 
             % update the status
             controller.stepSend();
