@@ -38,6 +38,9 @@ classdef IController < handle
         
         % current joint configuration
         q(:,1) double
+
+        % the time taken for each iteration
+        tick(1,1) double
         
         % current count of robot stay in the condition of ending
         % See: goalReached, stepUpdateCounter, checkEnd

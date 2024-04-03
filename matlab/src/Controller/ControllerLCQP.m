@@ -15,11 +15,12 @@ classdef ControllerLCQP < IController
         obstacleList = {}
         
         dt = 1e-2
-        toleranceEnd = 1e-2
+        toleranceEnd = 0.01 %1e-2
         maxEndCount = 3
-        maxStep = 1000
+        maxStep = 1500
         
         q
+        tick
         currentEndCount = 0
         currentStep = 0
     end
@@ -33,19 +34,19 @@ classdef ControllerLCQP < IController
         goal(3,1) double
 
         % constant for main task c*J*dx
-        constMainTask = 1
+        constMainTask = 0.2
 
         % constant for collision avoidance h*J1_1*N1_1*qdot
-        constContactTask = 0.001
+        constContactTask = 0.02
 
         % the upper and lower bound for each status in solver
         solverBound = 100
 
         % the safety distance between robot bar and 
-        safetyDistance = 0.1
+        safetyDistance = 0.12
 
         % the link that considers obstacle avoidance
-        linkObstacleAvoid = [3,4,5,7]
+        linkObstacleAvoid = [3,5,7]
 
         % the lambda parameter for damped jacobian inverse
         robustJinvLambda = 0.001
@@ -85,6 +86,7 @@ classdef ControllerLCQP < IController
             linkCode = controller.linkObstacleAvoid;
             lambda = controller.robustJinvLambda;
 
+            ht = tic;
             % get coordiate status
             qNow = controller.q;
             fkNow = controller.robotModel.fkm(qNow);
@@ -150,7 +152,8 @@ classdef ControllerLCQP < IController
                     R(iNum,1:nLink) = hContact * contactNormalDQ.vec4' * contactJacobMtx(:,:,iNum); 
                     J_temp = contactJacobMtx(:,:,iNum);
                     JDinv = J_temp' * pinv(J_temp*J_temp' + lambda * eye(4));
-                    A(1:nLink,iNum+nLink) = -JDinv * contactNormalDQ.vec4;
+                    %A(1:nLink,iNum+nLink) = - hContact * JDinv * contactNormalDQ.vec4;
+                    A(1:nLink,iNum+nLink) = - JDinv * contactNormalDQ.vec4;
                 end
             end
 
@@ -179,7 +182,8 @@ classdef ControllerLCQP < IController
             [x, ~, ~] = LCQPow(Q, g, L, R, lbL, ubL, lbR, ubR, A, lbA, ubA, lb, ub, params);
             controller.xLast = x;
             qdot = x(1:nLink,1);
-            controller.q = controller.q + hContact * qdot; 
+            controller.q = controller.q + qdot * controller.dt; 
+            controller.tick = toc(ht);
 
             % update the status
             controller.stepSend();
