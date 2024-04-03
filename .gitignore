@@ -40,6 +40,9 @@ matlab/remoteApiProto.m
 matlab/submodule/pathmex
 logfile.tmp
 
+# ignore the plotting output
+matlab/fig
+
 # ignore the VScode settings and workspace files
 .vscode/
 *.code-workspace
