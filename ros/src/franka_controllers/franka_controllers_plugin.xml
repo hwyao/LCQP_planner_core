@@ -16,4 +16,10 @@
       A controller that uses the LCQPow to control the robot. Works without using other ROS packages. Use multiple obstacles.
     </description>
   </class>
+
+    <class name="franka_controllers/LCQPControllerQuickConcept" type="franka_controllers::LCQPControllerQuickConcept" base_class_type="controller_interface::ControllerBase">
+    <description>
+      A controller that uses the LCQPow to control the robot. Works without using other ROS packages. Use quick concepting.
+    </description>
+  </class>
 </library>

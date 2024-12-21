@@ -96,3 +96,28 @@ LCQP_controller_multipleObstacle:
   maximumTime: 40.0
   tolerance: 0.01
   jacobianSkipcount: 1
+
+LCQP_controller_quickconcept:
+  type: franka_controllers/LCQPControllerQuickConcept
+  arm_id: $(arg arm_id)
+  joint_names:
+    - $(arg arm_id)_joint1
+    - $(arg arm_id)_joint2
+    - $(arg arm_id)_joint3
+    - $(arg arm_id)_joint4
+    - $(arg arm_id)_joint5
+    - $(arg arm_id)_joint6
+    - $(arg arm_id)_joint7
+  goal: [0.5, 0.4, 0.3]
+  obstacleRadius: 0.1
+  constMainTask: 0.2    # 0.5
+  constContactTask: 0.05
+  constError: 0.2
+  solverBound: 100
+  safetyDistance: 0.15
+  safetyIgnore: 0.17
+  linkObstacleAvoid: [2, 3, 6]
+  robustJinvLambda: 0.001
+  maximumTime: 40.0
+  tolerance: 0.01
+  jacobianSkipcount: 1

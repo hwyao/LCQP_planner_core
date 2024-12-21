@@ -87,6 +87,7 @@ add_library(${PROJECT_NAME} SHARED
   src/joint_position_controller.cpp
   src/LCQP_controller_frankaModel.cpp
   src/LCQP_controller_multipleObstacle.cpp
+  src/LCQP_controller_quickconcept.cpp
   src/LCQP_controller.cpp
   src/FrankaModel.cpp
 )
