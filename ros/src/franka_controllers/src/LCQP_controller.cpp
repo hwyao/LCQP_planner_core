@@ -44,7 +44,10 @@ namespace LCQP_controller{
         // initialize others things
         options.setPrintLevel(LCQPow::PrintLevel::NONE);
         options.setQPSolver(LCQPow::QPSolver::QPOASES_DENSE);
-        options.setStationarityTolerance( 10e-2 );
+        options.setStationarityTolerance( 1e-6 );
+        options.setComplementarityTolerance( 1e-3 );
+        options.setPenaltyUpdateFactor(2);
+        //initial penalty
 
         // initialize the matrices
         Q = MatrixXd::Identity(nVariables, nVariables);
