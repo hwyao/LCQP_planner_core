@@ -67,6 +67,10 @@ class LCQPControllerQuickConcept : public controller_interface::MultiInterfaceCo
   void publishObstacle(const std::vector<Vector3d>& obsList, const std::vector<double>& obsRadiusList);
 
   ros::Publisher distance_pub_; /// the publisher for the distance between robot and obstacles
+
+  ros::Publisher traj_pub_;
+  ros::Publisher vel_pub_;
+  void publishTrajectory(const std::vector<Vector3d>& trajList, const Vector3d& velcmd);
 };
 
 }  // namespace franka_controllers
