@@ -212,6 +212,7 @@ bool LCQPControllerQuickConcept::init(hardware_interface::RobotHW* robot_hardwar
   traj_pub_ = node_handle.advertise<nav_msgs::Path>("trajectory_planned", 1);
 
   vel_pub_ = node_handle.advertise<geometry_msgs::TwistStamped>("velocity_command_planned", 1);
+  vel_pub_2 = node_handle.advertise<geometry_msgs::TwistStamped>("velocity_command_LCQP", 1);
 
   return true;
 }
@@ -247,7 +248,7 @@ void LCQPControllerQuickConcept::update(const ros::Time& /*time*/, const ros::Du
     distance_pub_.publish(distance);
     publishObstacle(obsList_, obsRadiusList_);
     
-    MatrixXd EE_frame = frankaModel_.getTransformation(VectorXd::Zero(7), );
+    MatrixXd EE_frame = frankaModel_.getTransformation(VectorXd::Zero(7), 7);
     Vector3d position = EE_frame.block(0, 3, 3, 1);
     Vector3d goal = Vector3d(Map<Vector3d>(goal_.data()));
 
@@ -259,11 +260,17 @@ void LCQPControllerQuickConcept::update(const ros::Time& /*time*/, const ros::Du
         path[i] = (1.0 - t) * position + t * goal;
     }
 
+    VectorXd q = frankaModel_.getJointState();
+    MatrixXd J = frankaModel_.getJacobian(q, 7);
+    Vector3d vel_LCQP = (J * qDot).block(0, 0, 3, 1);
+    vel_LCQP = vel_LCQP / vel_LCQP.norm();
+    vel_LCQP = EE_frame.block(0,0,3,3) * vel_LCQP;
+
     Vector3d vel_cmd = goal - position;
     vel_cmd = vel_cmd / vel_cmd.norm();
     vel_cmd = EE_frame.block(0,0,3,3) * vel_cmd;
 
-    publishTrajectory(path,vel_cmd);
+    publishTrajectory(path, vel_cmd, vel_LCQP);
   } while (false);
   
 
@@ -306,14 +313,17 @@ void LCQPControllerQuickConcept::update(const ros::Time& /*time*/, const ros::Du
   //ROS_INFO("LCQPControllerQuickConcept: Current time: finished");
 }
 
-void LCQPControllerQuickConcept::publishTrajectory(const std::vector<Vector3d>& trajList, const Vector3d& velcmd){
+void LCQPControllerQuickConcept::publishTrajectory(const std::vector<Vector3d>& trajList, const Vector3d& velcmd, const Vector3d& velLCQP){
     nav_msgs::Path path_msg;
     geometry_msgs::TwistStamped vel_msg;
+    geometry_msgs::TwistStamped vel_LCQP_msg;
 
     path_msg.header.stamp = ros::Time::now();
     path_msg.header.frame_id = "panda_link0";
     vel_msg.header.stamp = ros::Time::now();
     vel_msg.header.frame_id = "panda_link8"; 
+    vel_LCQP_msg.header.stamp = ros::Time::now();
+    vel_LCQP_msg.header.frame_id = "panda_link8";
 
     for (const auto& point : trajList) {
         geometry_msgs::PoseStamped pose;
@@ -330,8 +340,13 @@ void LCQPControllerQuickConcept::publishTrajectory(const std::vector<Vector3d>& 
     vel_msg.twist.linear.y = velcmd.y();
     vel_msg.twist.linear.z = velcmd.z();
 
+    vel_LCQP_msg.twist.linear.x = velLCQP.x();
+    vel_LCQP_msg.twist.linear.y = velLCQP.y();
+    vel_LCQP_msg.twist.linear.z = velLCQP.z();
+
     traj_pub_.publish(path_msg);
     vel_pub_.publish(vel_msg);
+    vel_pub_2.publish(vel_LCQP_msg);
 }
 
 void LCQPControllerQuickConcept::publishObstacle(const std::vector<Vector3d>& obsList, const std::vector<double>& obsRadiusList){

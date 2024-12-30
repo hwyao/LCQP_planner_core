@@ -70,7 +70,8 @@ class LCQPControllerQuickConcept : public controller_interface::MultiInterfaceCo
 
   ros::Publisher traj_pub_;
   ros::Publisher vel_pub_;
-  void publishTrajectory(const std::vector<Vector3d>& trajList, const Vector3d& velcmd);
+  ros::Publisher vel_pub_2;
+  void publishTrajectory(const std::vector<Vector3d>& trajList, const Vector3d& velcmd, const Vector3d& velLCQP);
 };
 
 }  // namespace franka_controllers

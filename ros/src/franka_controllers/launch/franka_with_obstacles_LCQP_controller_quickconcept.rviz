@@ -5,6 +5,8 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
+        - /TwistStamped1
+        - /TwistStamped2
       Splitter Ratio: 0.5694444179534912
     Tree Height: 721
   - Class: rviz/Selection
@@ -225,6 +227,21 @@ Visualization Manager:
       Topic: /LCQP_controller_quickconcept/velocity_command_planned
       Unreliable: false
       Value: true
+    - Alpha: 1
+      Angular Arrow Scale: 2
+      Angular Color: 204; 204; 51
+      Arrow Width: 0.10000000149011612
+      Class: rviz/TwistStamped
+      Enabled: true
+      Hide Small Values: false
+      History Length: 1
+      Linear Arrow Scale: 0.20000000298023224
+      Linear Color: 122; 127; 204
+      Name: TwistStamped
+      Queue Size: 10
+      Topic: /LCQP_controller_quickconcept/velocity_command_LCQP
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -269,9 +286,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.17979732155799866
+      Pitch: 0.37979716062545776
       Target Frame: <Fixed Frame>
-      Yaw: 0.49499940872192383
+      Yaw: 0.2949996292591095
     Saved: ~
 Window Geometry:
   Displays:
